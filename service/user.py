@@ -1,11 +1,16 @@
-from models import User
-
-
-def get_user(username:str):
-    if username in User:
-        user_dict = db[username]
-        return UserInDb(**user_dict)
+from models.User import get_user_by_name,verify_password
 
 
 def authenticate(username, password):
-    user = get_user(username)
+    user = get_user_by_name(username)
+    if not user:
+        return False
+    if not verify_password(password, user.password):
+        return False
+    return user
+
+
+
+
+
+
