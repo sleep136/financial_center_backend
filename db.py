@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 
 user_pgsql_url = 'mysql+pymysql://jonnyan404:www.mrdoc.fun@172.31.22.85:3306/mrdoc'
-user_connect_args = {"check_same_thread": False}
-user_engine = create_engine(user_pgsql_url, connect_args=user_connect_args)
+
+user_engine = create_engine(user_pgsql_url)
 
 
 def create_db_and_tables():

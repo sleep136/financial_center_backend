@@ -7,7 +7,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(SQLModel, table=True):
-    id: int
+    id: Optional[int] = Field(default=None, primary_key=True)
     username: str
     email: Optional[str] = Field(default=None)
     first_name: Optional[str] = Field(default=None)
