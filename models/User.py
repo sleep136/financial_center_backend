@@ -60,3 +60,5 @@ def password_verify( password, encrypted_string):
     """
     iterations, salt, hash_value_b64 = encrypted_string.split('$')[-3:]
     return password_encrypt(password, salt, int(iterations)) == encrypted_string
+
+# User.metadata.create_all(user_engine, checkfirst=True)

@@ -6,7 +6,7 @@ router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-@router.get("/program/")
+@router.get("/program/one_program")
 async def get_program(program_id: str, department_id: str):
     programs = get_one_program(program_id,department_id)
     if not programs:
@@ -14,7 +14,7 @@ async def get_program(program_id: str, department_id: str):
     return programs
 
 
-@router.get("/program/")
+@router.get("/program/batch_program")
 async def get_batch_program(program_id: str):
     program = get_program_info_list(program_id)
     if not program:

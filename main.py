@@ -1,12 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
-from db import  create_db_and_tables
-from routers import login
+#from db import  create_db_and_tables
+from routers import login,program
 
 app = FastAPI()
 
 app.include_router(login.router)
-
+app.include_router(program.router)
 
 user_db = None
 
@@ -15,9 +15,9 @@ user_db = None
 async def root():
     return {"message": "Hello World"}
 
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+# @app.on_event("startup")
+# def on_startup():
+#     create_db_and_tables()
 
 
 

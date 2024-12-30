@@ -135,7 +135,7 @@ def get_program_by_program_id(program_id: str):
     """
     with Session(financial_engine) as session:
         statement = select(Program).where(Program.xmbh == program_id)
-        results = session.exec(statement)
+        results = session.exec(statement).all()
         if results:
             return results
 
@@ -152,3 +152,5 @@ def get_program_by_program_id_and_department_id(program_id: str, department_id: 
         if results:
             for row in results:
                 return row
+
+# Program.metadata.create_all(financial_engine)
