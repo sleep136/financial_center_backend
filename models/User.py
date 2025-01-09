@@ -61,4 +61,12 @@ def password_verify( password, encrypted_string):
     iterations, salt, hash_value_b64 = encrypted_string.split('$')[-3:]
     return password_encrypt(password, salt, int(iterations)) == encrypted_string
 
+
+def get_user_by_id(user_id: int):
+    with Session(user_engine) as session:
+        statement = select(User).where(User.id == user_id)
+        results = session.exec(statement)
+        if results:
+            for row in results:
+                return row
 # User.metadata.create_all(user_engine, checkfirst=True)

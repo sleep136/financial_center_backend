@@ -1,13 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
 #from db import  create_db_and_tables
-from routers import login,program
+from routers import login,program,student
 
 app = FastAPI()
 
 app.include_router(login.router)
 app.include_router(program.router)
-
+app.include_router(student.router)
 user_db = None
 
 
