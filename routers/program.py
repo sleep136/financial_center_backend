@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from service.program import get_one_program, get_program_info_list
+from service.program import get_one_program, get_program_info_list,get_freeze_detail,get_reimbursement_detail
 
 router = APIRouter()
 
@@ -20,3 +20,17 @@ async def get_batch_program(program_id: str):
     if not program:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return program
+
+@router.get("/program/batch_program/freeze")
+async def get_batch_freeze_detail(program_id: str,department_id: str):
+    freeze_details = get_freeze_detail(program_id,department_id)
+    if not freeze_details:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return freeze_details
+
+@router.get("/program/batch_program/freeze")
+async def get_batch_reimbursement_detail(program_id: str,department_id: str):
+    reimbursement_details = get_reimbursement_detail(program_id,department_id)
+    if not reimbursement_details:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return reimbursement_details

@@ -74,7 +74,6 @@ def get_student_toll(student_id: str):
     """
     with Session(student_expense_engine) as session:
         statement = select(Student_Toll).where(Student_Toll.XH == student_id)
-        results = session.exec(statement)
+        results = session.exec(statement).all()
         if results:
-            for row in results:
-                return row
+            return results
