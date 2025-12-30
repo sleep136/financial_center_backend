@@ -6,9 +6,9 @@ from db import reimbursement_engine
 class Reimbursement(SQLModel, table=True):
     __tablename__ = "YY_PZFL"
     GTBH: str
-    YYDH: str  # 预约单号
-    YWBH: str  # 业务编号
-    BH: int  # ?
+    YYDH: str = Field(default=None, primary_key=True)  # 预约单号
+    YWBH: str = Field(default=None, primary_key=True)  # 业务编号
+    BH: int = Field(default=None, primary_key=True)  # ?
     FJZS: int
     KMBH: str  # 项目子项编号
     JJFLKMBH: str  # 经济分类科目编号
@@ -125,7 +125,7 @@ class Reimbursement_BX(SQLModel, table=True):
     YWRQ: str  # Y业务日期
     NIAN: str  # 年
     YUE: str  # 月
-    YWBH: str  # 业务编号
+    YWBH: str= Field(default=None, primary_key=True)   # 业务编号
     BH: int  # ?
     DCPJH: str  #
     YWLX: str  # 业务类型

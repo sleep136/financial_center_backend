@@ -1,1 +1,11 @@
 cx_Oracle
+oracledb
+fastapi
+uvicorn[standard]
+gunicorn
+sqlmodel
+passlib
+pymysql
+pymssql
+jwt
+python-multipart

@@ -30,13 +30,13 @@ def get_freeze_detail(program_id: str, department_id: str):
     :param department_id:
     :return:
     """
-    freeze_details = get_freeze_details(program_id, department_id)
+    freeze_details = get_freeze_details(department_id, program_id)
     if not freeze_details:
         return False
     list_program_details = []
     for freeze_detail in freeze_details:
         list_program_details.append(ProgramFreeze(program_id=freeze_detail.xmbh, department_id=freeze_detail.bmbh,
-                                                  program_name=freeze_detail.xmmc, abstract=freeze_detail.zy,
+                                                  abstract=freeze_detail.zy,
                                                   freeze_number=freeze_detail.djje,
                                                   unfreeze_number=freeze_detail.jdje, operator=freeze_detail.sbr,
                                                   operate_time=freeze_detail.sbrq, is_review=freeze_detail.pllsh,
@@ -44,6 +44,7 @@ def get_freeze_detail(program_id: str, department_id: str):
                                                   business_order_number=freeze_detail.ywdh,
                                                   hedge_number=freeze_detail.xgr))
     return list_program_details
+
 
 def get_reimbursement_detail(program_id: str, department_id: str):
     """
@@ -56,14 +57,14 @@ def get_reimbursement_detail(program_id: str, department_id: str):
     if not reimbursement_details:
         return False
     list_reimbursement_details = []
-    for freeze_detail in reimbursement_details:
-        list_reimbursement_details.append(Reimbursement(reservation_number=freeze_detail.yydh,
-                                                        business_order_number=freeze_detail.ywdh,
-                                                        program_id=freeze_detail.xmbh,
-                                                        department_id=freeze_detail.bmbh,
-                                                        abstract=freeze_detail.zy,
-                                                        operator=freeze_detail.jbr,
-                                                        state=freeze_detail.zt))
+    for reimbursement in reimbursement_details:
+        list_reimbursement_details.append(Reimbursement(reservation_number=reimbursement.yydh,
+                                                        business_order_number=reimbursement.ywdh,
+                                                        program_id=reimbursement.xmbh,
+                                                        department_id=reimbursement.bmbh,
+                                                        abstract=reimbursement.zy,
+                                                        operator=reimbursement.jbr,
+                                                        state=reimbursement.zt))
     return list_reimbursement_details
 
 
@@ -76,16 +77,16 @@ class Program(BaseModel):
 class ProgramFreeze(BaseModel):
     program_id: str
     department_id: str
-    program_name: str
     abstract: str
-    freeze_number: str
-    unfreeze_number: str
+    freeze_number: float
+    unfreeze_number: float
     operator: str
     operate_time: str
     is_review: str
     review_date: str
     business_order_number: str
     hedge_number: str
+
 
 class Reimbursement(BaseModel):
     reservation_number: str
