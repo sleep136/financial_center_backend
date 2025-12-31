@@ -46,7 +46,7 @@ def get_freeze_detail(program_id: str, department_id: str):
     return list_program_details
 
 
-def get_reimbursement_detail(program_id: str, department_id: str):
+def get_reimbursement_detail(program_id: int, department_id: int):
     """
     获取项目报销明细
     :param program_id:
@@ -58,13 +58,13 @@ def get_reimbursement_detail(program_id: str, department_id: str):
         return False
     list_reimbursement_details = []
     for reimbursement in reimbursement_details:
-        list_reimbursement_details.append(Reimbursement(reservation_number=reimbursement.yydh,
-                                                        business_order_number=reimbursement.ywdh,
-                                                        program_id=reimbursement.xmbh,
-                                                        department_id=reimbursement.bmbh,
-                                                        abstract=reimbursement.zy,
-                                                        operator=reimbursement.jbr,
-                                                        state=reimbursement.zt))
+        list_reimbursement_details.append(Reimbursement(reservation_number=reimbursement.YYDH,
+                                                        business_order_number=reimbursement.YWBH,
+                                                        program_id=reimbursement.XMBH,
+                                                        department_id=reimbursement.BMBH,
+                                                        abstract=reimbursement.ZY,
+                                                        operator=reimbursement.JBR,
+                                                        state=reimbursement.ZT))
     return list_reimbursement_details
 
 
@@ -91,8 +91,8 @@ class ProgramFreeze(BaseModel):
 class Reimbursement(BaseModel):
     reservation_number: str
     business_order_number: str
-    program_id: str
-    department_id: str
+    program_id: int
+    department_id: int
     abstract: str
     operator: str
     state: str

@@ -19,9 +19,11 @@ student_expense_engine = create_engine(student_expense_mssql_url, echo=True)
 #     SQLModel.metadata.create_all(financial_engine, checkfirst=True)
 import oracledb
 
-# 在应用启动时启用厚模式
-oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient")
+# windows用应用启动时启用厚模式
+#oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
 
+# docker中用
+oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_11_2")
 # 报销库相关配置
-reimbursement_sql_url = "oracle+oracledb://ghwsyy:ghwsyy@172.31.22.229:1521/?service_name=ORCL"
+reimbursement_sql_url = "oracle+oracledb://ghwsyy:ghwsyy@172.31.22.229:1521/ORCL"
 reimbursement_engine = create_engine(reimbursement_sql_url, echo=True)

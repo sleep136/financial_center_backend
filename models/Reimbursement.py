@@ -5,6 +5,7 @@ from db import reimbursement_engine
 
 class Reimbursement(SQLModel, table=True):
     __tablename__ = "YY_PZFL"
+    __table_args__ = {'schema': "dgyy"}
     GTBH: str
     YYDH: str = Field(default=None, primary_key=True)  # 预约单号
     YWBH: str = Field(default=None, primary_key=True)  # 业务编号
@@ -13,8 +14,8 @@ class Reimbursement(SQLModel, table=True):
     KMBH: str  # 项目子项编号
     JJFLKMBH: str  # 经济分类科目编号
     GNKMBH: str
-    BMBH: str  # 部门编号
-    XMBH: str  # 项目编号
+    BMBH: int  # 部门编号
+    XMBH: int  # 项目编号
     JJE: float  # ？
     DJE: float  # ？
     ZY: str  # 摘要
@@ -90,34 +91,34 @@ class Reimbursement(SQLModel, table=True):
     KSSH: str
     YWCCLASS: str
     ZCYWDH: str
-    DJLY: str
-    FPNR: str
-    FIELD11: str
-    FIELD12: str
-    FIELD13: str
-    FIELD14: str
-    FIELD15: str
-    FIELD16: str
-    FIELD17: str
-    FIELD18: str
-    FIELD19: str
-    FIELD20: str
-    FIELD21: str
-    FIELD22: str
-    FIELD23: str
-    FIELD24: str
-    FIELD25: str
-    DJ: str
-    SL: str
-    EJXMBH: str
-    CGLX: str
-    HTZXJHBH: str
-    XTLX: str
-    CZSJ: str
-    BHYJ: str
-    CZR: str
-    JFLB: str
-    JFLBMX: str
+    # DJLY: str
+    # FPNR: str
+    # FIELD11: str
+    # FIELD12: str
+    # FIELD13: str
+    # FIELD14: str
+    # FIELD15: str
+    # FIELD16: str
+    # FIELD17: str
+    # FIELD18: str
+    # FIELD19: str
+    # FIELD20: str
+    # FIELD21: str
+    # FIELD22: str
+    # FIELD23: str
+    # FIELD24: str
+    # FIELD25: str
+    # DJ: str
+    # SL: str
+    # EJXMBH: str
+    # CGLX: str
+    # HTZXJHBH: str
+    # XTLX: str
+    # CZSJ: str
+    # BHYJ: str
+    # CZR: str
+    # JFLB: str
+    # JFLBMX: str
 
 
 class Reimbursement_BX(SQLModel, table=True):
@@ -125,7 +126,7 @@ class Reimbursement_BX(SQLModel, table=True):
     YWRQ: str  # Y业务日期
     NIAN: str  # 年
     YUE: str  # 月
-    YWBH: str= Field(default=None, primary_key=True)   # 业务编号
+    YWBH: str = Field(default=None, primary_key=True)  # 业务编号
     BH: int  # ?
     DCPJH: str  #
     YWLX: str  # 业务类型
@@ -268,22 +269,24 @@ def get_reimbursement_by_operator_id(operator_id: str):
             return results
 
 
-def get_reimbursement_by_program_id(department_id: str, program_id: str):
+def get_reimbursement_by_program_id(department_id: int, program_id: int):
     """
     通过部门编号获取报销信息
     :param department_id: 部门编号
     :return: 报销信息列表
     """
+    department_id = int(department_id)
+    program_id = int(program_id)
     with Session(reimbursement_engine) as session:
         statement = select(Reimbursement).where(
-            Reimbursement.BMBH == department_id and Reimbursement.XMBH == program_id and Reimbursement.JJE > 0)
+            Reimbursement.BMBH == department_id, Reimbursement.XMBH == program_id, Reimbursement.JJE > 0)
 
         results = session.exec(statement).all()
         if results:
             return results
 
 
-def get_reimbursement_in_transit_by_program_id(department_id: str, program_id: str):
+def get_reimbursement_in_transit_by_program_id(department_id: int, program_id: int):
     """
     通过部门编号获取在途报销信息
     :param department_id: 部门编号
