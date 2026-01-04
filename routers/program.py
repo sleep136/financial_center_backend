@@ -34,3 +34,11 @@ async def get_batch_reimbursement_detail(program_id: str,department_id: str):
     if not reimbursement_details:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return reimbursement_details
+
+@router.get("/program/labor_cost")
+async def get_batch_labor_cost_detail(program_id: str, department_id: str):
+    labor_cost_details = get_reimbursement_detail(program_id, department_id)
+    if not labor_cost_details:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return labor_cost_details
+

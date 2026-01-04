@@ -1,6 +1,7 @@
 from models.Program import get_program_by_program_id, get_program_by_program_id_and_department_id
 from models.Reimbursement import get_reimbursement_by_program_id, get_reimbursement_in_transit_by_program_id
 from models.ProgramFreeze import get_freeze_details
+from models.LaborCost import get_labor_cost_by_program_id
 from pydantic import BaseModel
 
 
@@ -68,6 +69,49 @@ def get_reimbursement_detail(program_id: int, department_id: int):
     return list_reimbursement_details
 
 
+def get_labor_cost_detail(program_id: int, department_id: int):
+    """
+    获取项目劳务成本明细
+    :param program_id:
+    :param department_id:
+    :return:
+    """
+    on_campus_results, off_campus_statement, student_cost_statement = get_labor_cost_by_program_id(department_id, program_id)
+    if not on_campus_results:
+        return False
+    list_labor_cost_details = []
+    for labor_cost in on_campus_results:
+        list_labor_cost_details.append(LaborCost(labor_number=labor_cost.LSH,
+                                                        business_order_number=labor_cost.XUHAO,
+                                                        program_id=labor_cost.XMBH,
+                                                        department_id=labor_cost.BMBH,
+                                                        abstract=labor_cost.ZY,
+                                                        operator=labor_cost.JBR,
+                                                        state=labor_cost.STATE,
+                                                        type=1,
+                                                 ))
+    for labor_cost in off_campus_statement:
+        list_labor_cost_details.append(LaborCost(labor_number=labor_cost.LSH,
+                                                        business_order_number=labor_cost.XUHAO,
+                                                        program_id=labor_cost.XMBH,
+                                                        department_id=labor_cost.BMBH,
+                                                        abstract=labor_cost.ZY,
+                                                        operator=labor_cost.JBR,
+                                                        state=labor_cost.STATE,
+                                                        type=2,
+                                                 ))
+    for labor_cost in student_cost_statement:
+        list_labor_cost_details.append(LaborCost(labor_number=labor_cost.LSH,
+                                                        business_order_number=labor_cost.XUHAO,
+                                                        program_id=labor_cost.XMBH,
+                                                        department_id=labor_cost.BMBH,
+                                                        abstract=labor_cost.ZY,
+                                                        operator=labor_cost.JBR,
+                                                        state=labor_cost.STATE,
+                                                        type=3,
+                                                 ))
+    return list_labor_cost_details
+
 class Program(BaseModel):
     program_name: str
     program_id: str
@@ -96,3 +140,13 @@ class Reimbursement(BaseModel):
     abstract: str
     operator: str
     state: str
+
+class LaborCost(BaseModel):
+    labor_number: str
+    business_order_number: str
+    program_id: int
+    department_id: int
+    abstract: str
+    operator: str
+    state: str
+    type: int # 1: 校内劳务 2: 校外劳务 3: 学生劳务
