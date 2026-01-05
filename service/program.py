@@ -4,7 +4,7 @@ from models.ProgramFreeze import get_freeze_details
 from models.LaborCost import get_labor_cost_by_program_id
 from pydantic import BaseModel
 import logging
-
+import json
 logger=logging.getLogger(__name__)
 def get_program_info_list(program_id: str):
     programs = get_program_by_program_id(program_id)
@@ -67,7 +67,7 @@ def get_reimbursement_detail(program_id: int, department_id: int):
                                                         abstract=reimbursement.ZY,
                                                         operator=reimbursement.JBR,
                                                         state=reimbursement.ZT))
-    return list_reimbursement_details
+    return json.loads(list_reimbursement_details)
 
 
 def get_labor_cost_detail(program_id: int, department_id: int):
