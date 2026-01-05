@@ -5,7 +5,7 @@ from db import reimbursement_engine
 
 class Reimbursement(SQLModel, table=True):
     __tablename__ = "YY_PZFL"
-    __table_args__ = {'schema': "dgyy"}
+    __table_args__ = {'schema': "wsyy"}
     GTBH: str
     YYDH: str = Field(default=None, primary_key=True)  # 预约单号
     YWBH: str = Field(default=None, primary_key=True)  # 业务编号

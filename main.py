@@ -5,10 +5,15 @@ from routers import login,program,student
 
 app = FastAPI()
 
+from utils.logging import create_logger
+create_logger()
+import logging
+logger = logging.getLogger('financial_center_backend.app')
+
 app.include_router(login.router)
 app.include_router(program.router)
 app.include_router(student.router)
-user_db = None
+
 
 
 @app.get("/")

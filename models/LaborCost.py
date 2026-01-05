@@ -10,7 +10,7 @@ class OnCampusPersonnelLaborCost(SQLModel, table=True):
     校内劳务
     """
     __tablename__ = "GSSB_GXSFFB"
-    __table_args__ = {'schema': "dgyy"}
+    __table_args__ = {'schema': "wssbnew"}
     NIAN: str = Field(default=None)  # 年
     YUE: str = Field(default=None)  # 月
     LSH: str = Field(default=None, primary_key=True)  # 序列号
@@ -102,39 +102,6 @@ class OnCampusPersonnelLaborCost(SQLModel, table=True):
     ISTAMP: str = Field(default=None)
     YHZHN: str = Field(default=None)
     FFMS: str = Field(default=None)
-    ISNXZ: str = Field(default=None)
-    TSSM: str = Field(default=None)
-    TSSM2: str = Field(default=None)
-    TSSM3: str = Field(default=None)
-    TSSM4: str = Field(default=None)
-    TSSM5: str = Field(default=None)
-    ITEM31: str = Field(default=None)
-    ITEM32: str = Field(default=None)
-    ITEM33: str = Field(default=None)
-    ITEM34: str = Field(default=None)
-    ITEM35: str = Field(default=None)
-    ITEM36: str = Field(default=None)
-    ITEM37: str = Field(default=None)
-    ITEM38: str = Field(default=None)
-    ITEM39: str = Field(default=None)
-    ITEM40: str = Field(default=None)
-    ITEM41: str = Field(default=None)
-    ITEM42: str = Field(default=None)
-    ITEM43: str = Field(default=None)
-    ITEM44: str = Field(default=None)
-    ITEM45: str = Field(default=None)
-    ITEM46: str = Field(default=None)
-    ITEM47: str = Field(default=None)
-    ITEM48: str = Field(default=None)
-    ITEM49: str = Field(default=None)
-    ITEM50: str = Field(default=None)
-    ZNDETAILS: str = Field(default=None)
-    TSSM6: str = Field(default=None)
-    TSSM7: str = Field(default=None)
-    TSSM8: str = Field(default=None)
-    TSSM9: str = Field(default=None)
-    TSSM10: str = Field(default=None)
-    CWID: str = Field(default=None)
 
 
 class OffCampusPersonnelLaborCost(SQLModel, table=True):
@@ -142,10 +109,10 @@ class OffCampusPersonnelLaborCost(SQLModel, table=True):
     校外劳务
     """
     __tablename__ = "GSSB_WLWSFFB"
-    __table_args__ = {'schema': "dgyy"}
+    __table_args__ = {'schema': "wssbnew"}
     NIAN: str = Field(default=None)  # 年
     YUE: str = Field(default=None)  # 月
-    LSH: str = Field(default=None)  # 序列编号
+    LSH: str = Field(default=None, primary_key=True)  # 序列编号
     RYDM: str = Field(default=None)  # 人员代码
     RYMC: str = Field(default=None)  # 人员名称
     YHZH: str = Field(default=None)  # 银行账号
@@ -232,45 +199,6 @@ class OffCampusPersonnelLaborCost(SQLModel, table=True):
     DWSTR: str = Field(default=None)
     KHHSTR: str = Field(default=None)
     ISTAMP: str = Field(default=None)
-    YHZHN: str = Field(default=None)
-    FFMS: str = Field(default=None)
-    ISNXZ: str = Field(default=None)
-    TSSM: str = Field(default=None)
-    TSSM2: str = Field(default=None)
-    TSSM3: str = Field(default=None)
-    TSSM4: str = Field(default=None)
-    TSSM5: str = Field(default=None)
-    TJDETAILS: str = Field(default=None)
-    TJ: str = Field(default=None)
-    ITEM31: str = Field(default=None)
-    ITEM32: str = Field(default=None)
-    ITEM33: str = Field(default=None)
-    ITEM34: str = Field(default=None)
-    ITEM35: str = Field(default=None)
-    ITEM36: str = Field(default=None)
-    ITEM37: str = Field(default=None)
-    ITEM38: str = Field(default=None)
-    ITEM39: str = Field(default=None)
-    ITEM40: str = Field(default=None)
-    ITEM41: str = Field(default=None)
-    ITEM42: str = Field(default=None)
-    ITEM43: str = Field(default=None)
-    ITEM44: str = Field(default=None)
-    ITEM45: str = Field(default=None)
-    ITEM46: str = Field(default=None)
-    ITEM47: str = Field(default=None)
-    ITEM48: str = Field(default=None)
-    ITEM49: str = Field(default=None)
-    ITEM50: str = Field(default=None)
-    ZNDETAILS: str = Field(default=None)
-    UUID: str = Field(default=None)
-    TSSM6: str = Field(default=None)
-    TSSM7: str = Field(default=None)
-    TSSM8: str = Field(default=None)
-    TSSM9: str = Field(default=None)
-    TSSM10: str = Field(default=None)
-    CWID: str = Field(default=None)
-    SFJE1: str = Field(default=None)
 
 
 class StudentLaborCost(SQLModel, table=True):
@@ -278,10 +206,10 @@ class StudentLaborCost(SQLModel, table=True):
     学生劳务
     """
     __tablename__ = "XS_ZYFFB"
-    __table_args__ = {'schema': "dgyy"}
+    __table_args__ = {'schema': "wssbnew"}
     NIAN: str = Field(default=None)  # 年
     YUE: str = Field(default=None)  # 月
-    LSH: str = Field(default=None)  # 序列编号
+    LSH: str = Field(default=None, primary_key=True)  # 序列编号
     XH: str = Field(default=None)  # 学号
     XM: str = Field(default=None)  # 姓名
     YHZH: str = Field(default=None)  # 银行账号
@@ -368,92 +296,38 @@ class StudentLaborCost(SQLModel, table=True):
     DWSTR: str = Field(default=None)
     KHHSTR: str = Field(default=None)
     ISTAMP: str = Field(default=None)
-    YHZHN: str = Field(default=None)
-    FFMS: str = Field(default=None)
-    ISHD: str = Field(default=None)
-    HDLY: str = Field(default=None)
-    TSSM: str = Field(default=None)
-    TSSM2: str = Field(default=None)
-    TSSM3: str = Field(default=None)
-    TSSM4: str = Field(default=None)
-    TSSM5: str = Field(default=None)
-    TJDETAILS: str = Field(default=None)
-    TJ: str = Field(default=None)
-    ITEM31: str = Field(default=None)
-    ITEM32: str = Field(default=None)  # 项目32
-    ITEM33: str = Field(default=None)  # 项目33
-    ITEM34: str = Field(default=None)  # 项目34
-    ITEM35: str = Field(default=None)  # 项目35
-    ITEM36: str = Field(default=None)  # 项目36
-    ITEM37: str = Field(default=None)  # 项目37
-    ITEM38: str = Field(default=None)  # 项目38
-    ITEM39: str = Field(default=None)  # 项目39
-    ITEM40: str = Field(default=None)  # 项目40
-    ITEM41: str = Field(default=None)  # 项目41
-    ITEM42: str = Field(default=None)  # 项目42
-    ITEM43: str = Field(default=None)  # 项目43
-    ITEM44: str = Field(default=None)  # 项目44
-    ITEM32: str = Field(default=None)
-    ITEM33: str = Field(default=None)  # 项目33
-    ITEM34: str = Field(default=None)  # 项目34
-    ITEM35: str = Field(default=None)  # 项目35
-    ITEM36: str = Field(default=None)  # 项目36
-    ITEM37: str = Field(default=None)  # 项目37
-    ITEM38: str = Field(default=None)  # 项目38
-    ITEM39: str = Field(default=None)  # 项目39
-    ITEM40: str = Field(default=None)  # 项目40
-    ITEM41: str = Field(default=None)  # 项目41
-    ITEM42: str = Field(default=None)  # 项目42
-    ITEM43: str = Field(default=None)  # 项目43
-    ITEM44: str = Field(default=None)  # 项目44
-    ITEM45: str = Field(default=None)  # 项目45
-    ITEM46: str = Field(default=None)  # 项目46
-    ITEM47: str = Field(default=None)  # 项目47
-    ITEM48: str = Field(default=None)  # 项目48
-    ITEM49: str = Field(default=None)  # 项目49
-    ITEM50: str = Field(default=None)  # 项目50
-    ZNDETAILS: str = Field(default=None)
-    TSSM6: str = Field(default=None)
-    TSSM7: str = Field(default=None)
-    TSSM8: str = Field(default=None)
-    TSSM9: str = Field(default=None)
-    TSSM10: str = Field(default=None)
-    CWID: str = Field(default=None)
 
 
-def get_labor_cost_by_program_id(department_id: str, program_id: str, is_all: bool = False):
+def get_labor_cost_by_program_id(department_id: int, program_id: int, is_all: bool = False):
     """
     根据项目ID获取劳务详情
     :param department_id: 部门ID
     :param program_id: 项目ID
     :return: 劳务详情
     """
+    department_id = int(department_id)
+    program_id = int(program_id)
     with Session(reimbursement_engine) as session:
         on_campus_statement = select(OnCampusPersonnelLaborCost).where(
-            OnCampusPersonnelLaborCost.BMBH == department_id and OnCampusPersonnelLaborCost.XMBH == program_id)
+            OnCampusPersonnelLaborCost.BMBH == department_id, OnCampusPersonnelLaborCost.XMBH == program_id)
         if not is_all:
-            on_campus_statement = on_campus_statement.filter(OnCampusPersonnelLaborCost.STATE != 5)
-            on_campus_results = session.exec(on_campus_statement).all()
-
-        else:
-            on_campus_results = session.exec(on_campus_statement).all()
+            on_campus_statement = on_campus_statement.where(OnCampusPersonnelLaborCost.STATE != 5)
+        result = session.execute(on_campus_statement)
+        on_campus_results = result.scalars().all()  # 获取所有结果
 
         off_campus_statement = select(OffCampusPersonnelLaborCost).where(
-            OffCampusPersonnelLaborCost.BMBH == department_id and OffCampusPersonnelLaborCost.XMBH == program_id)
+            OffCampusPersonnelLaborCost.BMBH == department_id, OffCampusPersonnelLaborCost.XMBH == program_id)
         if not is_all:
-            off_campus_statement = off_campus_statement.filter(OffCampusPersonnelLaborCost.STATE != 5)
-            off_campus_statement = session.exec(off_campus_statement).all()
+            off_campus_statement = off_campus_statement.where(OffCampusPersonnelLaborCost.STATE != 5)
 
-        else:
-            off_campus_statement = session.exec(off_campus_statement).all()
+        result = session.execute(off_campus_statement)
+        off_campus_results = result.scalars().all()
 
         student_cost_statement = select(StudentLaborCost).where(
-            StudentLaborCost.BMBH == department_id and StudentLaborCost.XMBH == program_id)
+            StudentLaborCost.BMBH == department_id, StudentLaborCost.XMBH == program_id)
         if not is_all:
-            student_cost_statement = student_cost_statement.filter(StudentLaborCost.STATE != 5)
-            student_cost_statement = session.exec(student_cost_statement).all()
+            student_cost_statement = student_cost_statement.where(StudentLaborCost.STATE != 5)
+        result = session.execute(student_cost_statement)
+        student_cost_results = result.scalars().all()
 
-        else:
-            student_cost_statement = session.exec(student_cost_statement).all()
-
-        return on_campus_results, off_campus_statement, student_cost_statement
+        return on_campus_results, off_campus_results, student_cost_results
