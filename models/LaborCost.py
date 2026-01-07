@@ -298,7 +298,7 @@ class StudentLaborCost(SQLModel, table=True):
     ISTAMP: str = Field(default=None)
 
 
-def get_labor_cost_by_program_id(department_id: int, program_id: int, is_all: bool = False):
+def get_labor_cost_by_program_id(department_id: int, program_id: int, is_filter: bool = True):
     """
     根据项目ID获取劳务详情
     :param department_id: 部门ID
@@ -310,14 +310,14 @@ def get_labor_cost_by_program_id(department_id: int, program_id: int, is_all: bo
     with Session(reimbursement_engine) as session:
         on_campus_statement = select(OnCampusPersonnelLaborCost).where(
             OnCampusPersonnelLaborCost.BMBH == department_id, OnCampusPersonnelLaborCost.XMBH == program_id)
-        if not is_all:
+        if is_filter:
             on_campus_statement = on_campus_statement.where(OnCampusPersonnelLaborCost.STATE != 5)
         result = session.execute(on_campus_statement)
         on_campus_results = result.scalars().all()  # 获取所有结果
 
         off_campus_statement = select(OffCampusPersonnelLaborCost).where(
             OffCampusPersonnelLaborCost.BMBH == department_id, OffCampusPersonnelLaborCost.XMBH == program_id)
-        if not is_all:
+        if is_filter:
             off_campus_statement = off_campus_statement.where(OffCampusPersonnelLaborCost.STATE != 5)
 
         result = session.execute(off_campus_statement)
@@ -325,7 +325,7 @@ def get_labor_cost_by_program_id(department_id: int, program_id: int, is_all: bo
 
         student_cost_statement = select(StudentLaborCost).where(
             StudentLaborCost.BMBH == department_id, StudentLaborCost.XMBH == program_id)
-        if not is_all:
+        if is_filter:
             student_cost_statement = student_cost_statement.where(StudentLaborCost.STATE != 5)
         result = session.execute(student_cost_statement)
         student_cost_results = result.scalars().all()

@@ -7,11 +7,11 @@ user_pgsql_url = 'mysql+pymysql://jonnyan404:www.mrdoc.fun@172.31.22.85:3306/mrd
 user_engine = create_engine(user_pgsql_url, echo=True)
 
 # 财务库相关配置
-financial_sql_url = 'mssql+pymssql://fc:123456@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=GB18030'
+financial_sql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?charset=GB18030'
 financial_engine = create_engine(financial_sql_url, echo=True)
 
 # 学生收费库相关配置
-student_expense_mssql_url = 'mssql+pymssql://fc:123456@172.31.22.80:1433/xssf60?tds_version=7.0&charset=GB18030'
+student_expense_mssql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/xssf60?tds_version=7.0&charset=GB18030'
 student_expense_engine = create_engine(student_expense_mssql_url, echo=True)
 #
 # def create_db_and_tables():

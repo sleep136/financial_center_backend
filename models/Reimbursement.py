@@ -269,7 +269,7 @@ def get_reimbursement_by_operator_id(operator_id: str):
             return results
 
 
-def get_reimbursement_by_program_id(department_id: int, program_id: int):
+def get_reimbursement_by_program_id(department_id: int, program_id: int, is_filter: bool = True):
     """
     通过部门编号获取报销信息
     :param department_id: 部门编号
@@ -280,7 +280,8 @@ def get_reimbursement_by_program_id(department_id: int, program_id: int):
     with Session(reimbursement_engine) as session:
         statement = select(Reimbursement).where(
             Reimbursement.BMBH == department_id, Reimbursement.XMBH == program_id, Reimbursement.JJE > 0)
-
+        if is_filter:
+            statement = statement.where(Reimbursement.ZT != 3)
         results = session.exec(statement).all()
         if results:
             return results

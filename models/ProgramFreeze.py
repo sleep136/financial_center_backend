@@ -10,8 +10,8 @@ class ProgramFreeze(SQLModel, table=True):
     __tablename__ = "zw_xmdjmx"
     id: Optional[int] = Field(default=None, primary_key=True)
     rq: str  # 日期
-    bmbh: Optional[str] = Field(default=None, primary_key=True)  # 部门编号
-    xmbh: Optional[str] = Field(default=None, primary_key=True)  # 项目编号
+    bmbh: str = Field(default=None, primary_key=True)  # 部门编号
+    xmbh:str = Field(default=None, primary_key=True)  # 项目编号
     zy: str  # 摘要
     djje: float  # 冻结金额
     jdje: float  # 解冻金额

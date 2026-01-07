@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from service.program import get_one_program, get_program_info_list, get_freeze_detail, get_reimbursement_detail, \
-    get_labor_cost_detail
+    get_labor_cost_detail,Reimbursement,LaborCost
 from fastapi.responses import JSONResponse
 router = APIRouter()
 
@@ -34,19 +34,17 @@ async def get_batch_freeze_detail(program_id: int, department_id: int):
         content={"data": freeze_details})
 
 
-@router.get("/program/reimbursement")
-async def get_batch_reimbursement_detail(program_id: str, department_id: str):
-    reimbursement_details = get_reimbursement_detail(program_id, department_id)
+@router.get("/program/reimbursement", response_model=list[Reimbursement])
+async def get_batch_reimbursement_detail(program_id: str, department_id: str, filter_state: int=1):
+    reimbursement_details = get_reimbursement_detail(program_id, department_id, filter_state)
     if not reimbursement_details:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return JSONResponse(status_code=200,
-        content={"data": reimbursement_details})
+    return reimbursement_details
 
 
-@router.get("/program/labor_cost")
-async def get_batch_labor_cost_detail(program_id: str, department_id: str):
-    labor_cost_details = get_labor_cost_detail(program_id, department_id)
+@router.get("/program/labor_cost", response_model=list[LaborCost])
+async def get_batch_labor_cost_detail(program_id: str, department_id: str, filter_state: int=1):
+    labor_cost_details = get_labor_cost_detail(program_id, department_id, filter_state)
     if not labor_cost_details:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return JSONResponse(status_code=200,
-                       content={"data": labor_cost_details})
+        return []
+    return labor_cost_details
