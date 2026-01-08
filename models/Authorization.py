@@ -35,3 +35,15 @@ def get_authorization_by_program_id(program_id: str):
         results = session.exec(statement).all()
         if results:
             return results
+
+def get_authorization_by_work_id(work_id: str):
+    """
+    通过被授权人账号获取授权信息
+    :param work_id: 被授权人账号
+    :return:
+    """
+    with Session(reimbursement_engine) as session:
+        statement = select(Authorization).where(Authorization.BSQRZJH == work_id)
+        results = session.exec(statement).all()
+        if results:
+            return results

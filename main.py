@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 #from db import  create_db_and_tables
-from routers import login,program,student
+from routers import login,program,student,authorization,approval_workflow
 
 app = FastAPI()
 # CORS 配置
@@ -27,8 +27,8 @@ logger = logging.getLogger('financial_center_backend.app')
 app.include_router(login.router)
 app.include_router(program.router)
 app.include_router(student.router)
-
-
+app.include_router(authorization.router)
+app.include_router(approval_workflow.router)
 
 @app.get("/")
 async def root():
