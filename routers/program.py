@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from service.program import get_one_program, get_program_info_list, get_freeze_detail, get_reimbursement_detail, \
-    get_labor_cost_detail,Reimbursement,LaborCost
+    get_labor_cost_detail,Reimbursement,LaborCost,VoucherDetail,get_economic_classification_cost
 from fastapi.responses import JSONResponse
 router = APIRouter()
 
@@ -47,3 +47,11 @@ async def get_batch_labor_cost_detail(program_id: str, department_id: str, filte
     if not labor_cost_details:
         return []
     return labor_cost_details
+
+
+@router.get("/program/economic_classification_cost", response_model=list[VoucherDetail])
+async def get_economic_classification(program_id: str, department_id: str,  subject_code:str):
+    economic_classification_details = get_economic_classification_cost(program_id, department_id, subject_code)
+    if not economic_classification_details:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return economic_classification_details
