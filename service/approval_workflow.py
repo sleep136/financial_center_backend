@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from models.ApprovalWorkflow import get_approval_workflow_by_business_id, get_approval_workflow_by_work_id
 import json
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 def get_workflow_by_business_id(business_id: str):
     """
@@ -13,7 +17,7 @@ def get_workflow_by_business_id(business_id: str):
 
     for approval_workflow in approval_workflows:
         approval_date = approval_workflow.SPRQ if approval_workflow.SPRQ else ""
-        approver = approval_workflow.SPR  if approval_workflow.SPR  else ""
+        approver = approval_workflow.SPR if approval_workflow.SPR else ""
         list_workflows.append(
             ApprovalWorkflowDataObject(business_id=approval_workflow.YWLSH,
                                        business_type=approval_workflow.YWBH,
@@ -30,7 +34,7 @@ def get_workflow_by_business_id(business_id: str):
     return list_workflows
 
 
-def get_workflow_by_work_id(work_id: str):
+def get_workflow_by_work_id(work_id: str, state:int=-1):
     """
     通过工作流编号获取工作流信息
     :param work_id: 工作流编号
@@ -66,7 +70,7 @@ def get_workflow_by_work_id(work_id: str):
     for lsh, approval_workflow in dict_workflows.items():
         print(approval_workflow)
         abstract_dict = json.loads(approval_workflow['abstract'])
-        abstract =flatten_dict_to_str(abstract_dict)
+        abstract = flatten_dict_to_str(abstract_dict)
         approval_date = approval_workflow['approval_date'] if approval_workflow['approval_date'] else ""
         approver = approval_workflow['approver'] if approval_workflow['approver'] else ""
         list_workflows.append(
@@ -82,6 +86,10 @@ def get_workflow_by_work_id(work_id: str):
                                        approval_role=approval_workflow['approval_role'],
                                        abstract=abstract
                                        ))
+    state = str(state)
+    if state != "-1":
+
+        list_workflows = [item for item in list_workflows if item.approval_state == state]
     return list_workflows
 
 

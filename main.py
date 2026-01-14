@@ -11,8 +11,13 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:57587",  # 前端开发服务器
         "http://127.0.0.1:57587",
+        "http://127.0.0.1:80",
+        "http://172.31.22.3",
         "http://localhost:5173",   # Vite 默认端口
         "http://localhost:8080",   # Vue CLI 默认端口
+        "http://172.31.22.3",  # Nginx地址
+        "http://localhost",     # 本地访问
+        "http://127.0.0.1",    # 本地回环
     ],
     allow_credentials=True,
     allow_methods=["*"],  # 允许所有 HTTP 方法
