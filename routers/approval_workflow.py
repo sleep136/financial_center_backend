@@ -4,8 +4,8 @@ router = APIRouter()
 
 
 @router.get("/workflows/teacher")
-async def get_workflow_list_by_work_id(work_id: str):
-    workflows = get_workflow_by_work_id(work_id)
+async def get_workflow_list_by_work_id(work_id: str,state:int=-1):
+    workflows = get_workflow_by_work_id(work_id,state)
     if not workflows:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return workflows

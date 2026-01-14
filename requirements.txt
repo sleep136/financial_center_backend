@@ -10,3 +10,4 @@ pymssql
 jwt
 python-multipart
 pydantic_settings
+openpyxl

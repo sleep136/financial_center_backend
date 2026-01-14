@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, select, Session
 from typing import Optional
-from db import financial_engine
+from db import financial_engine,financial_engine_2025,financial_engine_2024
 
 
 class Voucher(SQLModel, table=True):
@@ -97,13 +97,22 @@ class Voucher(SQLModel, table=True):
     zysm: str
 
 
-def get_voucher_by_department_program_id(department_id: str, program_id: str):
+def get_voucher_by_department_program_id(department_id: str, program_id: str, year:int=2026):
     """
     通过项目编号获取项目信息，可能会查到多条
     :param program_id:
     :return:
     """
-    with Session(financial_engine) as session:
+    if year == 2026:
+        engine = financial_engine
+    elif year == 2025:
+        engine = financial_engine_2025
+    elif year == 2024:
+        engine = financial_engine_2024
+    else:
+        engine = financial_engine
+
+    with Session(engine) as session:
         statement = select(Voucher).where(Voucher.bmbh == department_id, Voucher.xmbh == program_id)
         results = session.exec(statement).all()
         if results:

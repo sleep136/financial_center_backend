@@ -203,7 +203,7 @@ def get_labor_cost_detail(program_id: int, department_id: int, is_filter: int = 
     return list_labor_cost_details
 
 
-def get_economic_classification_cost(program_id: str, department_id: str, subjects_code: str):
+def get_economic_classification_cost(program_id: str, department_id: str, subjects_code: str, year: int = 2026):
     """
     获取项目劳务成本明细
     :param program_id:
@@ -219,7 +219,10 @@ def get_economic_classification_cost(program_id: str, department_id: str, subjec
     if not economic_classification_code_list:
         return False
     economic_classification_results = get_voucher_by_department_program_id(department_id,
-                                                                           program_id)
+                                                                           program_id,year)
+
+    if not economic_classification_results:
+        return False
     list_economic_classification = []
     for economic_classification_result in economic_classification_results:
         for economic_classification_code in economic_classification_code_list:
