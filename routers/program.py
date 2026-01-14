@@ -100,9 +100,10 @@ async def export_economic_classification(program_id: str, department_id: str, su
             cell.alignment = header_alignment
             cell.border = border
 
+        start_row = 2
         # 写入数据
-        for row, item in enumerate(economic_classification_details):
-
+        for i, item in enumerate(economic_classification_details):
+            row = start_row + i
             ws.cell(row=row, column=1, value=item.voucher_number)
             ws.cell(row=row, column=2, value=item.program_id)
             ws.cell(row=row, column=3, value=item.department_id)
