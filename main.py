@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 #from db import  create_db_and_tables
-from routers import login,program,student,authorization,approval_workflow
+from routers import login,program,student,authorization,approval_workflow,teacher
 
 app = FastAPI()
 # CORS 配置
@@ -34,7 +34,7 @@ app.include_router(program.router)
 app.include_router(student.router)
 app.include_router(authorization.router)
 app.include_router(approval_workflow.router)
-
+app.include_router(teacher.router)
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
