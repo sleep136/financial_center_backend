@@ -99,8 +99,7 @@ def update_invoice_by_invoice_id(invoice_id: str, bind_to_ks: bool = True) -> bo
             invoice = session.get(Invoice, invoice_id)
             if not invoice:
                 return False
-            if invoice.JBR != "2024058":
-                return False
+
                 # 更新YWBH字段
             if bind_to_ks:
                 invoice.YWBH = "KS"  # 绑定到KS
