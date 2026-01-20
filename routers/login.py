@@ -1,41 +1,64 @@
-from http.client import HTTPException
 
-from fastapi import APIRouter, status,Depends
-from fastapi.security import OAuth2PasswordRequestForm
-from  service.user import authenticate
-from dependencies import Token
-from datetime import datetime, timedelta, timezone
-from typing import Annotated, Union
-import jwt
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Depends, APIRouter,HTTPException
+
+from service.user import get_user_info, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from jose import JWTError, jwt
+from pydantic import BaseModel
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 router = APIRouter()
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-@router.post("/token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
-    user = authenticate(form_data.username, form_data.password)
+
+class LoginData(BaseModel):
+    """登录请求数据模型"""
+    username: str
+    password: str
+
+
+@router.post("/login")
+async def login(
+        login_data: LoginData
+
+):
+    """用户登录"""
+    user = get_user_info(login_data.username, login_data.password)
+
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password",
-                            headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=400, detail="用户名或密码错误")
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return Token(access_token=access_token, token_type="bearer")
+    # 生成token
+
+    return user
 
 
+@router.get("/login/me")
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        username: str = payload.get("username")
+        groups: list = payload.get("groups", [])
 
-def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+        if user_id is None or username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="无效的认证凭证",
+            )
+
+        return {
+            "id": int(user_id),
+            "username": username,
+            "groups": groups,
+            "is_admin": 1 in groups,
+            "is_accountant": (3 in groups) or (len(groups) == 0)
+        }
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="无效的认证凭证",
+        )
+
 
 @router.get("/hello/{name}")
 async def say_hello(name: str):

@@ -38,9 +38,4 @@ def get_expense(student_id):
             )
     return dict_expense
 
-    def get_user_info(student_id):
-        user = get_user_by_id(student_id)
-        if not user:
-            return False
-        user_info = {"user_id": student_id, "user_name": user.username}
-        return user_info
+
