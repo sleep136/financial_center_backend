@@ -113,8 +113,8 @@ def process_indicators(df_input1):
     if dict_check["exists"]:
         msg = f'指标：{dict_check["exists"]}已存在 '
         return 0, msg
-    count = insert_indicators(list_input1)
-    return count, ''
+    count, msg = insert_indicators(list_input1)
+    return count, msg
 
 
 def find_null_values(df):
@@ -168,3 +168,7 @@ def get_indicators(year: str, page: int = 1, page_size: int = 20, indicator_name
         })
     dict_batch_indicators['data'] = list_indicators
     return dict_batch_indicators
+
+
+def process_compare_indicators(df_input1, df_input2):
+    pass

@@ -1,13 +1,32 @@
-from sqlmodel import SQLModel, Field, select, Session
-from typing import Optional, List
-from db import financial_engine
 from datetime import datetime
+from typing import Optional, List
 
+from sqlalchemy import Column, String
+from sqlalchemy import TypeDecorator
+from sqlalchemy import func
+from sqlalchemy.dialects.mssql import NVARCHAR
+from sqlmodel import SQLModel, Field, select, Session
+
+from db import financial_engine, financial_write_engine
+
+
+class NString(TypeDecorator):
+    """自定义类型，自动添加N前缀"""
+    impl = String
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is not None and dialect.name == 'mssql':
+            # 为SQL Server添加N前缀
+            return f"N'{value}'" if value else "N''"
+        return value
 
 class Indicator(SQLModel, table=True):
     __tablename__ = "zw_yszbzd"
     Zbdm: Optional[str] = Field(default=None, primary_key=True)  # 指标代码
-    Zbmc: str  # 指标名称
+    Zbmc: str  = Field(
+        sa_column=Column(NVARCHAR(255), nullable=False)  # 使用NVARCHAR
+    ) # 指标名称
     ysnd: str  # 预算年度
     Gkxmdm: str  # 预算项目代码
     kmbh: str  # 零余额科目编号
@@ -15,13 +34,18 @@ class Indicator(SQLModel, table=True):
     Lkx: str  # 功能分类
     gkjjfldm: str  # 政府预算支出经济分类代码代码
     jjflkmbh: str  # 部门预算支出经济分类编号
-    Zbwh: str  # 指标文号
+    Zbwh: str = Field(
+        sa_column=Column(NVARCHAR(255), nullable=False)  # 使用NVARCHAR
+    ) # 指标文号
     Zjxzdm: str  # 资金性质编码
     Zjlydm: str
     Zbje: str  # 指标金额
     Tzje: str
     Zbye: str  # 指标余额
-    Zbsm: str
+    Zbsm: str = Field(
+        default='',
+        sa_column=Column(NVARCHAR(255), nullable=False)  # 使用NVARCHAR
+    )
     Zblxdm: str  # 指标类型编码
     Iscg: str
     Zblydm: str
@@ -35,13 +59,7 @@ class Indicator(SQLModel, table=True):
     issm: str
     zbglh: str
     yszckmbh: str
-    cf1: str
-    cf2: str
-    cf3: str
-    cf4: str
-    cf5: str
-    lybh: str
-    isfczzb: str
+
 
 
 def check_zbdm_exists(zbdm_list: List[str]) -> dict:
@@ -225,13 +243,7 @@ def insert_indicators_with_check(list_indicators: List[dict]) -> dict:
                     issm='0',  # 默认不是说明
                     zbglh='',  # 指标管理号为空
                     yszckmbh='',  # 预算支出科目编号为空
-                    cf1='',
-                    cf2='',
-                    cf3='',
-                    cf4='',
-                    cf5='',
-                    lybh='',  # 来源编号为空
-                    isfczzb='0'  # 默认不是非财政指标
+
                 )
 
                 # 添加到session
@@ -264,7 +276,7 @@ def insert_indicators_with_check(list_indicators: List[dict]) -> dict:
 
 
 def get_batch_indicators(year: str, page: int = 1, page_size: int = 20, indicator_name: str = '',
-                         total_only: bool = True) -> dict:
+                         total_only: bool = False) -> dict:
     """
     分页获取指标信息
 
@@ -291,37 +303,39 @@ def get_batch_indicators(year: str, page: int = 1, page_size: int = 20, indicato
     """
     try:
         with Session(financial_engine) as session:
-            # 构建基础查询语句
-            statement = select(Indicator).where(Indicator.ysnd == str(year))
+            # 构建基础查询条件
+            conditions = [Indicator.ysnd == str(year)]
 
             if indicator_name:
-                # 使用like进行模糊查询，添加通配符%
-                statement = statement.where(Indicator.Zbmc.like(f"%{indicator_name}%"))
+                conditions.append(Indicator.Zbdm.like(f"{indicator_name}%"))
 
             # 如果只需要总数，则直接返回总数
             if total_only:
-                total_count = session.exec(select(Indicator).where(
-                    Indicator.ysnd == str(year),
-                    *([Indicator.Zbmc.like(f"%{indicator_name}%")] if indicator_name else [])
-                )).count()
-                return {"total": total_count}
+                total_count = session.scalar(
+                    select(func.count()).select_from(Indicator).where(*conditions)
+                )
+                return {"total": total_count or 0}
 
             # 获取总记录数
-            total_count = session.exec(statement).count()
+            total_count = session.scalar(
+                select(func.count()).select_from(Indicator).where(*conditions)
+            )
+            total_count = total_count or 0  # 处理 None 情况
 
             # 计算总页数
-            total_pages = (total_count + page_size - 1) // page_size  # 向上取整
+            total_pages = (total_count + page_size - 1) // page_size if total_count > 0 else 0
 
             # 处理页码边界
             if page < 1:
                 page = 1
-            elif page > total_pages and total_pages > 0:
+            elif total_pages > 0 and page > total_pages:
                 page = total_pages
 
-            # 计算偏移量
-            offset = (page - 1) * page_size
+            # 构建数据查询语句
+            statement = select(Indicator).where(*conditions)
 
             # 添加分页限制和排序（按指标代码排序，确保分页稳定性）
+            offset = (page - 1) * page_size
             paginated_statement = statement.offset(offset).limit(page_size).order_by(Indicator.Zbdm)
 
             # 执行查询
@@ -334,7 +348,7 @@ def get_batch_indicators(year: str, page: int = 1, page_size: int = 20, indicato
             # 构建返回结果
             return {
                 "total": total_count,
-                "total_pages": total_pages if total_count > 0 else 0,
+                "total_pages": total_pages,
                 "current_page": page,
                 "page_size": page_size,
                 "data": results if results else [],
@@ -360,7 +374,6 @@ def get_batch_indicators(year: str, page: int = 1, page_size: int = 20, indicato
             "error": str(e)
         }
 
-
 def insert_indicators(list_indicators: list):
     """
     通过传入的指标信息插入到数据库中
@@ -370,7 +383,7 @@ def insert_indicators(list_indicators: list):
 
     inserted_count = 0
 
-    with Session(financial_engine) as session:
+    with Session(financial_write_engine) as session:
         for indicator_data in list_indicators:
             try:
                 # 创建Indicator实例并映射字段
@@ -422,15 +435,23 @@ def insert_indicators(list_indicators: list):
             except Exception as e:
                 print(f"插入指标 {indicator_data.get('预算指标代码', '未知')} 时出错: {e}")
                 # 可以选择继续处理其他数据或抛出异常
-                continue
+                return 0, f"插入指标 {indicator_data.get('预算指标代码', '未知')} 时出错: {e}"
 
         try:
             # 提交所有更改到数据库
             session.commit()
             print(f"成功插入 {inserted_count} 条指标记录")
-            return inserted_count
+            return inserted_count, ''
 
         except Exception as e:
             session.rollback()
             print(f"提交到数据库时出错: {e}")
-            return 0
+            return 0, f"提交到数据库时出错: {e}"
+
+
+def ensure_gb18030(text):
+    """确保字符串是GB18030编码的bytes或正确转换"""
+    if isinstance(text, str):
+        # Python 3: str -> bytes
+        return text.encode('gb18030', errors='ignore')
+    return text
