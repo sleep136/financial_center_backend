@@ -9,8 +9,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 @router.get("/budget/one_program")
-async def get_program(program_id: str, department_id: str, year: int):
-    budgets = get_budget_breakdown(program_id, department_id, year)
+async def get_program(program_id: str, department_id: str, year: int, start_month: str, end_month: str):
+    budgets = get_budget_breakdown(program_id, department_id, year, start_month, end_month)
     if not budgets:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return budgets

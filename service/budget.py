@@ -7,7 +7,8 @@ import datetime
 logger = logging.getLogger(__name__)
 
 
-def get_budget_breakdown(program_id: str, department_id: str, year: int = 2026):
+def get_budget_breakdown(program_id: str, department_id: str, year: int = 2026,
+                         start_month: str = '0', end_month: str ='13'):
     """
     获取项目劳务成本明细
     :param program_id:
@@ -33,6 +34,8 @@ def get_budget_breakdown(program_id: str, department_id: str, year: int = 2026):
     list_voucher_detail = []
     for vocher in voucher_results:
         vocher_detail = dict_budget_date[vocher.pznm]
+        if int(vocher_detail.kjqj) > int(end_month) or int(vocher_detail.kjqj) < int(start_month):
+            continue
         voucher_id = vocher_detail.pzbh
         type_id = vocher_detail.lxbh
         date = vocher_detail.pzrq
