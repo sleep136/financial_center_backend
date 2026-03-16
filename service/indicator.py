@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 from models.Indicator import insert_indicators, check_zbdm_exists, get_batch_indicators
 from pydantic import BaseModel
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -171,4 +172,80 @@ def get_indicators(year: str, page: int = 1, page_size: int = 20, indicator_name
 
 
 def process_compare_indicators(df_input1, df_input2):
-    pass
+    # 检查df2中是否有重复的指标额度ID
+    duplicate_ids = df_input2['指标额度ID'][df_input2['指标额度ID'].duplicated()].unique()
+    if len(duplicate_ids) > 0:
+        raise ValueError(f"df2中存在重复的指标额度ID: {list(duplicate_ids)}")
+
+    # 执行左连接
+    merged_df = pd.merge(
+        df_input1[['指标ID',	'指标文号','功能分类编码']],
+        df_input2[['指标额度ID', '预算项目代码', '预算项目名称']],
+        how='left',
+        left_on='指标ID',
+        right_on='指标额度ID'
+    )
+
+    # 检查是否有未匹配的指标ID
+    missing_ids = merged_df[merged_df['指标额度ID'].isna()]['指标ID'].unique()
+    if len(missing_ids) > 0:
+        raise ValueError(f"df2中未找到对应的指标额度ID: {list(missing_ids)}")
+
+    error_msg = find_null_values(merged_df)
+    if error_msg:
+        raise ValueError(f"{error_msg}")
+            # 读取文件内容
+    # 可以选择删除临时的连接键列（如果需要）
+    # merged_df = merged_df.drop('指标额度ID', axis=1)
+    # 方法1：使用datetime.now()
+    current_year = datetime.datetime.now().year
+
+    list_input1 = []
+    for index, item in merged_df.iterrows():
+
+        for government_budget_expenditure_economic_classification, list_departmental_budget_expenditure_economic_classification in DICT_GOVERNMENT_BUDGET_TO_DEPARTMENTAL_BUDGET_EXPENDITURE.items():
+
+            for departmental_budget_expenditure_economic_classification in list_departmental_budget_expenditure_economic_classification:
+                budget_indicator_code = str(item['指标ID']) + '-' + str(
+                    government_budget_expenditure_economic_classification) + '-' + str(
+                    departmental_budget_expenditure_economic_classification)
+                logger.info(f"""
+                '预算指标代码': {budget_indicator_code},
+                             '预算指标名称': {item['预算项目名称']},
+                             '预算年度': {current_year},
+                             '财政预算项目代码': {item["预算项目代码"]},
+                             '政府支出经济分类': {str(government_budget_expenditure_economic_classification)}
+                             '部门支出经济分类': {str(departmental_budget_expenditure_economic_classification)}
+                             '本级指标文号': {item["指标文号"]},
+                             '资金性质代码': '1111',
+                             '支出功能分类': {item["功能分类编码"]}
+                             '指标类型代码': '211'
+                             '集中支付科目编号':'1011'
+                             '财政标准代码': {budget_indicator_code}
+                             '是否启用': {"1"}
+                             '指标金额': {"999999999"}
+                             '指标余额': {"999999999"}
+                             """)
+                dict_temp = {'预算指标代码': budget_indicator_code,
+                             '预算指标名称': item['预算项目名称'],
+                             '预算年度': current_year,
+                             '财政预算项目代码': item["预算项目代码"],
+                             '政府支出经济分类': str(government_budget_expenditure_economic_classification),
+                             '部门支出经济分类': str(departmental_budget_expenditure_economic_classification),
+                             '本级指标文号': item["指标文号"],
+                             '资金性质代码': '1111',
+                             '支出功能分类': item["功能分类编码"],
+                             '指标类型代码': '211',
+                             '集中支付科目编号': '1011',
+                             '财政标准代码': budget_indicator_code,
+                             '是否启用': "1",
+                             '指标金额': "999999999",
+                             '指标余额': "999999999", }
+                list_input1.append(dict_temp)
+
+    dict_check = check_zbdm_exists([item['预算指标代码'] for item in list_input1])
+    if dict_check["exists"]:
+        msg = f'指标：{dict_check["exists"]}已存在 '
+        return 0, msg
+    count, msg = insert_indicators(list_input1)
+    return count, msg

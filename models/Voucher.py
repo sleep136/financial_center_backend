@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, select, Session
 from typing import Optional
-from db import financial_engine,financial_engine_2025,financial_engine_2024
-
+from db import financial_engine, financial_engine_2025, financial_engine_2024
+from decimal import Decimal
 
 class Voucher(SQLModel, table=True):
     """
@@ -9,13 +9,13 @@ class Voucher(SQLModel, table=True):
     """
     __tablename__ = "zwpzfl"
     pznm: str = Field(default=None, primary_key=True)  # 凭证编号
-    flbh: str
+    flbh: str = Field(default=None, primary_key=True)
     kmbh: str  # 科目编号
     bmbh: str  # 部门编号
     xmbh: str  # 项目编号
     zy: str  # 摘要
-    jje: str  # 借金额
-    dje: str  # 贷金额
+    jje: Decimal  # 借金额
+    dje: Decimal  # 贷金额
     wbbh: str  #
     hl: str  #
     jsbh: str
@@ -97,7 +97,53 @@ class Voucher(SQLModel, table=True):
     zysm: str
 
 
-def get_voucher_by_department_program_id(department_id: str, program_id: str, year:int=2026):
+class VoucherDetail(SQLModel, table=True):
+    __tablename__ = "zwpzb"
+    pznm: str = Field(default=None, primary_key=True)  # 凭证编号
+    kjnd: str  # 开具年度
+    kjqj: str  # 开具月份
+    pzrq: str    # 凭证日期
+    pzbh: str   # 凭证的编号
+    lxbh: str   # 类型编号
+    fjzs: str
+    zdr: str
+    shr: str
+    fhr: str
+    jzr: str
+    cn: str
+    kjzg: str
+    fhf: str
+    jzf: str
+    zff: str
+    wzf: str
+    lybh: str
+    status: str
+    yydh: str  # 预约单号
+    ZTSX: str
+    YSPZNM: str
+    KJPZNM: str
+    ISZZ: str
+    ISXG: str
+    ISSC: str
+    CWSM: str
+    yzm: str
+    bz1: str
+    bz2: str
+    bz3: str
+    yhdm: str
+    lrrq: str  # 录入日期
+    xgr: str   # 相关人
+    xgrq: str
+    bz4: str
+    bz5: str
+    bz6: str
+    jbrdm: str
+    dzpznm: str
+    dafhr: str
+    dafhf: str
+
+
+def get_voucher_by_department_program_id(department_id: str, program_id: str, year: int = 2026):
     """
     通过项目编号获取项目信息，可能会查到多条
     :param program_id:
@@ -117,6 +163,67 @@ def get_voucher_by_department_program_id(department_id: str, program_id: str, ye
         results = session.exec(statement).all()
         if results:
             return deduplicate_by_attrs(results, ["pznm", "kmbh"])
+
+
+def get_breakdown_by_department_program_id(department_id: str, program_id: str, year: int = 2026):
+    """
+    通过项目编号获取预算下发明细
+    :param program_id:
+    :return:
+    """
+    if year == 2026:
+        engine = financial_engine
+    elif year == 2025:
+        engine = financial_engine_2025
+    elif year == 2024:
+        engine = financial_engine_2024
+    else:
+        engine = financial_engine
+
+    with Session(engine) as session:
+        statement = select(Voucher).where(Voucher.bmbh == department_id, Voucher.xmbh == program_id, Voucher.dje > 0,
+                                          Voucher.gklkxdm != '')
+        results = session.exec(statement).all()
+        if results:
+            return results
+
+def get_breakdown_by_voucher_id(department_id: str, program_id: str, year: int = 2026):
+    """
+    通过项目编号获取预算下发明细
+    :param program_id:
+    :return:
+    """
+    if year == 2026:
+        engine = financial_engine
+    elif year == 2025:
+        engine = financial_engine_2025
+    elif year == 2024:
+        engine = financial_engine_2024
+    else:
+        engine = financial_engine
+
+    with Session(engine) as session:
+        statement = select(Voucher).where(Voucher.bmbh == department_id, Voucher.xmbh == program_id, Voucher.dje > 0,
+                                          Voucher.gklkxdm != '')
+        results = session.exec(statement).all()
+        if results:
+            return results
+
+def get_date_by_voucher_id(voucher_id_list:list, year: int = 2026):
+    if year == 2026:
+        engine = financial_engine
+    elif year == 2025:
+        engine = financial_engine_2025
+    elif year == 2024:
+        engine = financial_engine_2024
+    else:
+        engine = financial_engine
+
+    with Session(engine) as session:
+        statement = select(VoucherDetail).where(VoucherDetail.pznm.in_(voucher_id_list))
+        results = session.exec(statement).all()
+        if results:
+            return results
 
 
 def deduplicate_by_attrs(obj_list, attrs):

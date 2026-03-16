@@ -75,15 +75,13 @@ async def indicator_compare_excel(file1: UploadFile = File(...), file2: UploadFi
         # 使用pandas读取Excel
         df_input1 = pd.read_excel(io.BytesIO(contents1))
 
-        error_msg = find_null_values(df_input1)
-        if error_msg:
-            raise HTTPException(status_code=500, detail=f"{error_msg}")
-            # 读取文件内容
         contents2 = await file2.read()
-
         # 使用pandas读取Excel
-        df_input2 = pd.read_excel(io.BytesIO(contents1))
-        insert_count, error_msg = process_compare_indicators(df_input1, df_input2)
+        df_input2 = pd.read_excel(io.BytesIO(contents2))
+        try:
+            insert_count, error_msg = process_compare_indicators(df_input1, df_input2)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"{str(e)}")
         if error_msg:
             raise HTTPException(status_code=500, detail=f"{error_msg}")
         return 'ok'
