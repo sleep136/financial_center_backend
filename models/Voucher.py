@@ -182,7 +182,7 @@ def get_breakdown_by_department_program_id(department_id: str, program_id: str, 
 
     with Session(engine) as session:
         statement = select(Voucher).where(Voucher.bmbh == department_id, Voucher.xmbh == program_id, Voucher.dje > 0,
-                                          Voucher.gklkxdm != '')
+                                          Voucher.gklkxdm != '', Voucher.cf6 > 0)
         results = session.exec(statement).all()
         if results:
             return results
