@@ -36,7 +36,7 @@ async def get_batch_program(program_id: str):
 async def get_batch_freeze_detail(program_id: int, department_id: int):
     freeze_details = get_freeze_detail(program_id, department_id)
     if not freeze_details:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return []
     return freeze_details
 
 
@@ -44,7 +44,7 @@ async def get_batch_freeze_detail(program_id: int, department_id: int):
 async def get_batch_reimbursement_detail(program_id: str, department_id: str, filter_state: int = 1):
     reimbursement_details = get_reimbursement_detail(program_id, department_id, filter_state)
     if not reimbursement_details:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return []
     return reimbursement_details
 
 

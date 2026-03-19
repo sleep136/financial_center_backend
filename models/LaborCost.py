@@ -331,3 +331,30 @@ def get_labor_cost_by_program_id(department_id: int, program_id: int, is_filter:
         student_cost_results = result.scalars().all()
 
         return on_campus_results, off_campus_results, student_cost_results
+
+def get_labor_cost_by_work_id(work_id: int, is_filter: bool = True):
+    work_id = str(work_id)
+    with Session(reimbursement_engine) as session:
+        on_campus_statement = select(OnCampusPersonnelLaborCost).where(
+            OnCampusPersonnelLaborCost.CZY == work_id)
+        if is_filter:
+            on_campus_statement = on_campus_statement.where(OnCampusPersonnelLaborCost.STATE != 5)
+        result = session.execute(on_campus_statement)
+        on_campus_results = result.scalars().all()  # 获取所有结果
+
+        off_campus_statement = select(OffCampusPersonnelLaborCost).where(
+            OffCampusPersonnelLaborCost.CZY == work_id)
+        if is_filter:
+            off_campus_statement = off_campus_statement.where(OffCampusPersonnelLaborCost.STATE != 5)
+
+        result = session.execute(off_campus_statement)
+        off_campus_results = result.scalars().all()
+
+        student_cost_statement = select(StudentLaborCost).where(
+            StudentLaborCost.CZY == work_id)
+        if is_filter:
+            student_cost_statement = student_cost_statement.where(StudentLaborCost.STATE != 5)
+        result = session.execute(student_cost_statement)
+        student_cost_results = result.scalars().all()
+
+        return on_campus_results, off_campus_results, student_cost_results

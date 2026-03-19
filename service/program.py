@@ -1,7 +1,8 @@
 from models.Program import get_program_by_program_id, get_program_by_program_id_and_department_id
-from models.Reimbursement import get_reimbursement_by_program_id, get_reimbursement_in_transit_by_program_id
+from models.Reimbursement import get_reimbursement_by_program_id, get_reimbursement_in_transit_by_program_id, \
+    get_reimbursement_by_work_id
 from models.ProgramFreeze import get_freeze_details
-from models.LaborCost import get_labor_cost_by_program_id
+from models.LaborCost import get_labor_cost_by_program_id,get_labor_cost_by_work_id
 from models.Voucher import get_voucher_by_department_program_id
 from pydantic import BaseModel
 import logging
@@ -219,7 +220,7 @@ def get_economic_classification_cost(program_id: str, department_id: str, subjec
     if not economic_classification_code_list:
         return False
     economic_classification_results = get_voucher_by_department_program_id(department_id,
-                                                                           program_id,year)
+                                                                           program_id, year)
 
     if not economic_classification_results:
         return False
@@ -243,6 +244,95 @@ def get_economic_classification_cost(program_id: str, department_id: str, subjec
 
                                                  ))
     return list_voucher_detail
+
+
+def get_reimbursements_by_work_id(work_id, is_filter):
+    is_filter = (is_filter == 1)
+    reimbursements = get_reimbursement_by_work_id(work_id, is_filter)
+
+    if not reimbursements:
+        return False
+    list_reimbursement_details = []
+    for reimbursement in reimbursements:
+        list_reimbursement_details.append(Reimbursement(reservation_number=reimbursement.YYDH,
+                                                        business_order_number=reimbursement.YWBH,
+                                                        program_id=reimbursement.XMBH,
+                                                        department_id=reimbursement.BMBH,
+                                                        abstract=reimbursement.ZY,
+                                                        operator=reimbursement.JBR,
+                                                        amount=reimbursement.JJE,
+                                                        state=reimbursement.ZT).model_dump())
+    return list_reimbursement_details
+
+
+def get_labor_costs_by_work_id(work_id, is_filter):
+    is_filter = is_filter == 1
+    on_campus_results, off_campus_results, student_cost_results = get_labor_cost_by_work_id(
+        work_id,
+        is_filter)
+    logger.info(
+        f"on_campus_results: {on_campus_results} off_campus_results: {off_campus_results} student_cost_results: {student_cost_results} ")
+
+    dict_labor_cost_details = {}
+    list_labor_cost_details = []
+    for labor_cost in on_campus_results:
+        if labor_cost.LSH in dict_labor_cost_details:
+            dict_labor_cost_details[labor_cost.LSH]['amount'] = dict_labor_cost_details[labor_cost.LSH][
+                                                                    'amount'] + labor_cost.JE
+        else:
+            dict_labor_cost_details[labor_cost.LSH] = {'amount': labor_cost.JE,
+                                                       'business_order_number': labor_cost.XUHAO,
+                                                       'program_id': labor_cost.XMBH,
+                                                       'department_id': labor_cost.BMBH,
+                                                       'abstract': labor_cost.ZY,
+                                                       'operator': labor_cost.JBR,
+                                                       'state': labor_cost.STATE,
+                                                       'type': 1  # 1: 校内劳务 2: 校外劳务 3: 学生劳务
+                                                       }
+
+    for labor_cost in off_campus_results:
+        if labor_cost.LSH in dict_labor_cost_details:
+            dict_labor_cost_details[labor_cost.LSH]['amount'] = dict_labor_cost_details[labor_cost.LSH][
+                                                                    'amount'] + labor_cost.JE
+        else:
+            dict_labor_cost_details[labor_cost.LSH] = {'amount': labor_cost.JE,
+                                                       'business_order_number': labor_cost.XUHAO,
+                                                       'program_id': labor_cost.XMBH,
+                                                       'department_id': labor_cost.BMBH,
+                                                       'abstract': labor_cost.ZY,
+                                                       'operator': labor_cost.JBR,
+                                                       'state': labor_cost.STATE,
+                                                       'type': 2  # 1: 校内劳务 2: 校外劳务 3: 学生劳务
+                                                       }
+    if student_cost_results:
+        for labor_cost in student_cost_results:
+            if labor_cost.LSH in dict_labor_cost_details:
+                dict_labor_cost_details[labor_cost.LSH]['amount'] = dict_labor_cost_details[labor_cost.LSH][
+                                                                        'amount'] + labor_cost.JE
+            else:
+                dict_labor_cost_details[labor_cost.LSH] = {'amount': labor_cost.JE,
+                                                           'business_order_number': labor_cost.XUHAO,
+                                                           'program_id': labor_cost.XMBH,
+                                                           'department_id': labor_cost.BMBH,
+                                                           'abstract': labor_cost.ZY,
+                                                           'operator': labor_cost.JBR,
+                                                           'state': labor_cost.STATE,
+                                                           'type': 3  # 1: 校内劳务 2: 校外劳务 3: 学生劳务
+                                                           }
+        dict_labor_cost_details = dict(sorted(dict_labor_cost_details.items()))
+    if dict_labor_cost_details:
+        for k, v in dict_labor_cost_details.items():
+            list_labor_cost_details.append(LaborCost(labor_number=k,
+                                                     business_order_number=v['business_order_number'],
+                                                     program_id=v['program_id'],
+                                                     department_id=v['department_id'],
+                                                     abstract=v['abstract'],
+                                                     operator=v['operator'] if v['operator'] else '' ,
+                                                     state=v['state'],
+                                                     amount=v['amount'],
+                                                     type=v['type'],
+                                                     ))
+    return list_labor_cost_details
 
 
 class Program(BaseModel):

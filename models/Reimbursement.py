@@ -300,3 +300,21 @@ def get_reimbursement_in_transit_by_program_id(department_id: int, program_id: i
         results = session.exec(statement).all()
         if results:
             return results
+
+def get_reimbursement_by_work_id(work_id: int, is_filter: bool = True):
+    """
+    通过经办人获取报销信息
+    :param department_id: 部门编号
+    :return: 报销信息列表
+    """
+
+    work_id = str(work_id)
+    with Session(reimbursement_engine) as session:
+        statement = select(Reimbursement).where(
+            Reimbursement.JBR == work_id, Reimbursement.JJE > 0)
+        if is_filter:
+            statement = statement.where(Reimbursement.ZT != 3)
+        results = session.exec(statement).all()
+        if results:
+            return results
+
