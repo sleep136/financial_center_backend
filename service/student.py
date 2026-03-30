@@ -1,4 +1,4 @@
-from models.Student import get_student_toll
+from models.Student import get_student_toll,get_student_info
 from models.User import get_user_by_id
 
 
@@ -18,6 +18,9 @@ def get_project_name(project_id):
 
 
 def get_expense(student_id):
+
+    info = get_student_info(student_id)
+
     tolls = get_student_toll(student_id)
 
     # student_accounts_receivablee = get_student_accounts_receivablee(student_id)
@@ -36,6 +39,8 @@ def get_expense(student_id):
                  "reduction_amount": toll.JMJE # 减免金额
                  }
             )
+    if info:
+        dict_expense['info']=info
     return dict_expense
 
 
