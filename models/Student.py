@@ -66,25 +66,25 @@ class Student_Toll(SQLModel, table=True):  # 收费表
 #             return results
 #
 
-class Student_Financial_Info(SQLModel, table=True):  # 账务系统学生信息表
-    __tablename__ = "PXSDM"
-    XH: str = Field(primary_key=True)  # 学号
-    XM: str  # 姓名
-    bmbh: str   # 部门编号 未使用
-    ZJM: str    # 拼音缩写
-    BMDM: str    # 部门代码
-    bmmc: str    # 部门名称
-    XSXZDM: str
-    XSXZMC: str
-    rylx: str
-    mobie: str
-    lxdh: str
-    email: str
-    ickh: str
-    yhzh: str   # 银行账号
-    sfzh: str
-    khhmc: str
-    zhlb: str
+# class Student_Financial_Info(SQLModel, table=True):  # 账务系统学生信息表
+#     __tablename__ = "PXSDM"
+#     XH: str = Field(primary_key=True)  # 学号
+#     XM: str  # 姓名
+#     bmbh: str   # 部门编号 未使用
+#     ZJM: str    # 拼音缩写
+#     BMDM: str    # 部门代码
+#     bmmc: str    # 部门名称
+#     XSXZDM: str
+#     XSXZMC: str
+#     rylx: str
+#     mobie: str
+#     lxdh: str
+#     email: str
+#     ickh: str
+#     yhzh: str   # 银行账号
+#     sfzh: str
+#     khhmc: str
+#     zhlb: str
 
 
 class Student_Charging_Info(SQLModel, table=True):  # 收费系统学生信息表

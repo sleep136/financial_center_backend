@@ -153,4 +153,17 @@ def get_program_by_program_id_and_department_id(program_id: str, department_id: 
             for row in results:
                 return row
 
+
+def get_program_by_owner_id(work_id: str):
+    """
+    通过项目负责人的工号获取项目信息，
+    :param program_id:
+    :return:
+    """
+    with Session(financial_engine) as session:
+        statement = select(Program).where(Program.fzrbh == work_id, Program.isfb == 1)
+        results = session.exec(statement)
+        if results:
+            return results
+
 # Program.metadata.create_all(financial_engine)
