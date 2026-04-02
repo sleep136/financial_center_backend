@@ -161,9 +161,9 @@ def get_program_by_owner_id(work_id: str):
     :return:
     """
     with Session(financial_engine) as session:
-        statement = select(Program).where(Program.fzrbh == work_id, Program.isfb == 1)
-        results = session.exec(statement)
+        statement = select(Program).where(Program.fzrbh == work_id, Program.isfb == '1')
+        results = session.execute(statement)
         if results:
-            return results
+            return  results.scalars().all()
 
 # Program.metadata.create_all(financial_engine)

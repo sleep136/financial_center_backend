@@ -5,10 +5,10 @@ from models.ProgramFreeze import get_freeze_details
 from models.LaborCost import get_labor_cost_by_program_id,get_labor_cost_by_work_id,get_labor_cost_by_program_list
 from models.Voucher import get_voucher_by_department_program_id
 from pydantic import BaseModel
-import logging
+from utils.logging import logger
 import json
 
-logger = logging.getLogger(__name__)
+
 
 dict_subjects_code = {"0101": "设备费",
                       "0201": '材料费',
@@ -356,6 +356,8 @@ def get_labor_costs_by_owner_id(work_id, is_filter):
     programs = get_program_by_owner_id(work_id)
     program_str_list = []
     if programs:
+        logger.info(
+            f"programs: {programs}  ")
         for program in programs:
             program_str_list.append(
                 str(program.bmbh)+'-'+str(program.xmbh))
