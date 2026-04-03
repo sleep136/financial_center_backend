@@ -13,3 +13,5 @@ pydantic_settings
 openpyxl
 python-jose
 pandas
+apscheduler
+redis

@@ -13,6 +13,17 @@ class Settings(BaseSettings):
 
     # # Redis配置
     # redis_url: str = "redis://localhost:6379/0"
+    # Redis
+    REDIS_URL: str = "redis://172.31.22.3:6379/0"
+    # 要检查的服务列表（IP:端口）
+    TARGET_SERVICES: dict = {
+        "172.31.22.185:8080": "财务-劳务申报系统",
+        "172.31.22.185:80": "财务-服务大厅",
+        "172.31.22.185:8051": "智慧平台"
+
+    }
+    # 定时检查间隔（秒）
+    CHECK_INTERVAL: int = 1200
     #
     # # JWT配置
     # secret_key: str = "your-secret-key"
@@ -33,8 +44,4 @@ class Settings(BaseSettings):
         case_sensitive = False
 
 
-
 settings = Settings()
-
-
-
