@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
-from models.Indicator import insert_indicators, check_zbdm_exists, get_batch_indicators
+from models.Indicator import insert_indicators, check_zbdm_exists, get_batch_indicators, \
+    check_single_budgetary_projects_exists,insert_budgetary_projects
 from pydantic import BaseModel
 import datetime
 
@@ -179,7 +180,7 @@ def process_compare_indicators(df_input1, df_input2):
 
     # 执行左连接
     merged_df = pd.merge(
-        df_input1[['指标ID',	'指标文号','功能分类编码']],
+        df_input1[['指标ID', '指标文号', '功能分类编码']],
         df_input2[['指标额度ID', '预算项目代码', '预算项目名称']],
         how='left',
         left_on='指标ID',
@@ -194,7 +195,7 @@ def process_compare_indicators(df_input1, df_input2):
     error_msg = find_null_values(merged_df)
     if error_msg:
         raise ValueError(f"{error_msg}")
-            # 读取文件内容
+        # 读取文件内容
     # 可以选择删除临时的连接键列（如果需要）
     # merged_df = merged_df.drop('指标额度ID', axis=1)
     # 方法1：使用datetime.now()
@@ -247,5 +248,25 @@ def process_compare_indicators(df_input1, df_input2):
     if dict_check["exists"]:
         msg = f'指标：{dict_check["exists"]}已存在 '
         return 0, msg
+    process_budgetary_projects(list_input1)
     count, msg = insert_indicators(list_input1)
     return count, msg
+
+
+def process_budgetary_projects(list_budgetary_projects):
+
+    list_nonexistent_budgetary_projects = []
+    list_data = []
+    # 检查中是否有重复的财政预算项目
+    for budgetary_project in list_budgetary_projects:
+        if not check_single_budgetary_projects_exists(budgetary_project['财政预算项目代码']):
+            if budgetary_project['财政预算项目代码'] not in list_nonexistent_budgetary_projects:
+                list_nonexistent_budgetary_projects.append(budgetary_project['财政预算项目代码'])
+                list_data.append(budgetary_project)
+    if list_data:
+        insert_budgetary_projects(list_data)
+
+
+
+
+

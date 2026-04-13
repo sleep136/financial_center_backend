@@ -8,6 +8,7 @@ from sqlalchemy.dialects.mssql import NVARCHAR
 from sqlmodel import SQLModel, Field, select, Session
 
 from db import financial_engine, financial_write_engine
+from utils.logging import logger
 
 
 class NString(TypeDecorator):
@@ -21,12 +22,13 @@ class NString(TypeDecorator):
             return f"N'{value}'" if value else "N''"
         return value
 
+
 class Indicator(SQLModel, table=True):
     __tablename__ = "zw_yszbzd"
     Zbdm: Optional[str] = Field(default=None, primary_key=True)  # 指标代码
-    Zbmc: str  = Field(
+    Zbmc: str = Field(
         sa_column=Column(NVARCHAR(255), nullable=False)  # 使用NVARCHAR
-    ) # 指标名称
+    )  # 指标名称
     ysnd: str  # 预算年度
     Gkxmdm: str  # 预算项目代码
     kmbh: str  # 零余额科目编号
@@ -36,7 +38,7 @@ class Indicator(SQLModel, table=True):
     jjflkmbh: str  # 部门预算支出经济分类编号
     Zbwh: str = Field(
         sa_column=Column(NVARCHAR(255), nullable=False)  # 使用NVARCHAR
-    ) # 指标文号
+    )  # 指标文号
     Zjxzdm: str  # 资金性质编码
     Zjlydm: str
     Zbje: str  # 指标金额
@@ -60,6 +62,54 @@ class Indicator(SQLModel, table=True):
     zbglh: str
     yszckmbh: str
 
+
+class BudgetaryFiscalProject(SQLModel, table=True):
+    __tablename__ = "zwgkxmzd"  # 财政预算项目字典
+    gkxmdm: str = Field(default=None, primary_key=True)  # 预算项目代码
+    gkxmmc: str
+    gklxdm: str
+    gkbmbh: str
+    zxbmbh: str
+    zgry: str
+    bnys: str
+    gklkxdm: str
+    lxnd: str
+    gkyslxdm: str
+    gkfzdm: str
+    lxr: str
+    lxsj: str
+    xgr: str
+    xgsj: str
+    isgk: str
+    czbbxmdm: str
+    czbbxmmc: str
+    bkwh: str
+    bkyt: str
+    xmlx: str
+    dqnxmdm: str
+    dqnxmmc: str
+    xmzq: str
+    dkrq: str
+    kmbh: str
+    gkjjfldm: str
+    gkyssxdm: str
+    gkzclxdm: str
+    iszfcg: str
+    ye: str
+    gkxmbm: str
+    xmyssx: str
+    yszczjlybh: str
+    gjbmbh: str
+    gjxmbh: str
+    gkxmlb: str
+    zzf: str
+    shtrje: str
+    bz: str
+    isjj: str
+    isky: str
+    iszb: str
+    tzje: str
+    lybh: str
 
 
 def check_zbdm_exists(zbdm_list: List[str]) -> dict:
@@ -374,6 +424,7 @@ def get_batch_indicators(year: str, page: int = 1, page_size: int = 20, indicato
             "error": str(e)
         }
 
+
 def insert_indicators(list_indicators: list):
     """
     通过传入的指标信息插入到数据库中
@@ -455,3 +506,57 @@ def ensure_gb18030(text):
         # Python 3: str -> bytes
         return text.encode('gb18030', errors='ignore')
     return text
+
+
+def check_single_budgetary_projects_exists(budgetary_project: str) -> bool:
+    """
+    检查单个财政预算项目代码是否已经存在于数据库中
+
+    参数:
+        budgetary_project: 要检查的财政预算项目代码
+
+    返回:
+        bool: 如果存在返回True，否则返回False
+    """
+    try:
+        with Session(financial_engine) as session:
+            statement = select(BudgetaryFiscalProject).where(BudgetaryFiscalProject.gkxmdm == budgetary_project)
+            result = session.exec(statement).first()
+            return result is not None
+
+    except Exception as e:
+        print(f"查询 {financial_engine} 时出错: {e}")
+        # 可以选择继续处理其他数据或抛出异常
+        return False
+
+
+def insert_budgetary_projects(list_budgetary_project: list) -> bool:
+    with Session(financial_write_engine) as session:
+        inserted_count = 0
+        for budgetary_project in list_budgetary_project:
+            try:
+                # 创建Indicator实例并映射字段
+                project = BudgetaryFiscalProject(
+                    gkxmdm=budgetary_project['财政预算项目代码'],
+                    gkxmmc=budgetary_project['预算指标名称'],
+                    gklkxdm=budgetary_project['支出功能分类'],
+                    lxnd=budgetary_project['预算年度'],
+                    lxr='admin',
+                    lxsj=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                )
+
+                # 添加到session
+                session.add(project)
+                inserted_count += 1
+
+            except Exception as e:
+                logger.error(f"插入指标 {budgetary_project.get('财政预算项目代码', '未知')} 时出错: {e}")
+                # 可以选择继续处理其他数据或抛出异常
+
+        try:
+            # 提交所有更改到数据库
+            session.commit()
+            logger.info(f"成功插入 {inserted_count} 条财政预算项目记录")
+        except Exception as e:
+            session.rollback()
+            logger.error(f"提交到数据库时出错: {e}")
