@@ -1,11 +1,12 @@
 from sqlmodel import SQLModel, Field, select, Session, DateTime
 from typing import Optional
-from db import reimbursement_sql_url
+from db import reimbursement_engine
 from decimal import Decimal
 
 
 class Receipt(SQLModel, table=True):  # 票据表
     __tablename__ = "YJPJ_SQ"
+    __table_args__ = {'schema': "YJPJ"}
     ID: str = Field(primary_key=True)  # 申请流水号
     ADDRESS: str
     BAHTFKYY: str
@@ -133,11 +134,12 @@ class Receipt(SQLModel, table=True):  # 票据表
     YWFLDM: str
 
 
-def InvoiceInfo(SQLModel, table=True):  # 票据信息表
+class InvoiceInfo(SQLModel, table=True):  # 票据信息表
     __tablename__ = "YJPJ_KPJG"
+    __table_args__ = {'schema': "YJPJ"}
     FPDM: str
     PJBH: str
-    SQDLSH= Field(primary_key=True)  # 申请单流水号
+    SQDLSH: str = Field(primary_key=True)  # 申请单流水号
     JE: str
     JKFS: str
     LY: str
@@ -159,7 +161,7 @@ def get_recipe(work_id: str = '', user_name: str = '', company_name: str = ''):
     :param company_name: 公司名称（支持模糊搜索）
     :return: 匹配的借票信息列表
     """
-    with Session(reimbursement_sql_url) as session:
+    with Session(reimbursement_engine) as session:
         # 初始化基础查询
         statement = select(Receipt)
 
@@ -178,7 +180,7 @@ def get_recipe(work_id: str = '', user_name: str = '', company_name: str = ''):
         return results  # 空列表直接返回即可，无需判断
 
 def get_recipe_url(serial_num):
-    with Session(reimbursement_sql_url) as session:
+    with Session(reimbursement_engine) as session:
         # 初始化基础查询
         statement = select(InvoiceInfo)
 
@@ -188,6 +190,6 @@ def get_recipe_url(serial_num):
 
 
         # 执行查询
-        results = session.exec(statement).one()
+        results = session.exec(statement).first()
 
         return results  # 空列表直接返回即可，无需判断

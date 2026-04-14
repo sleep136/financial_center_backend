@@ -10,11 +10,13 @@ def get_recipe_info_list(work_id: str = '', user_name: str = '', company_name: s
     for recipe in recipes:
         list_recipes.append(
             ReceiptData(serial_num=recipe.ID, operator_id=recipe.JPRGZH, operator_name=recipe.JPRXM,
-                        department_id=recipe.BMBH,
-                        company_name=recipe.DFDWMC, create_time=recipe.CREATE_TIME,
-                        contract_num=recipe.HTBH, program_name=recipe.XMMC, amount=recipe.BCKPJE,
+                        department_id=recipe.BMBH if recipe.BMBH else '',
+                        company_name=recipe.DFDWMC, create_time=recipe.CREATE_TIME.strftime('%Y-%m-%d %H:%M:%S'),
+                        contract_num=recipe.HTBH if recipe.HTBH else '',
+                        program_name=recipe.XMMC, amount=recipe.BCKPJE,
                         recipe_type=recipe.PJLXMC, approval_state=recipe.STATUS,
-                        reason=recipe.REASON, system_msg=recipe.RET_MSG
+                        reason=recipe.REASON if recipe.REASON else '',
+                        system_msg=recipe.RET_MSG if recipe.RET_MSG else '',
                         ))
 
     return list_recipes
@@ -38,7 +40,7 @@ class ReceiptData(BaseModel):
     # business_type: str  # 业务类型
     contract_num: str  # 合同编号
     program_name: str  # 项目名称
-    amount: str  # 开票金额（元）
+    amount: float  # 开票金额（元）
     recipe_type: str  # 票据类型
     approval_state: str  # 审核状态
     reason: str  # 原因

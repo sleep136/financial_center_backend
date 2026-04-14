@@ -6,6 +6,8 @@ router = APIRouter()
 
 @router.get("/receipe/get_receipes")
 async def get_receipes(work_id: str = '', user_name: str = '', company_name: str = ''):
+    if (not work_id) and (not user_name) and (not company_name):
+        return []
     receipes = get_recipe_info_list(work_id, user_name, company_name)
     if not receipes:
         return []
