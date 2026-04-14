@@ -115,6 +115,7 @@ def process_indicators(df_input1):
     if dict_check["exists"]:
         msg = f'指标：{dict_check["exists"]}已存在 '
         return 0, msg
+    process_budgetary_projects(list_input1)
     count, msg = insert_indicators(list_input1)
     return count, msg
 

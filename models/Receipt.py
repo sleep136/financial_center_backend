@@ -6,7 +6,7 @@ from decimal import Decimal
 
 class Receipt(SQLModel, table=True):  # 票据表
     __tablename__ = "YJPJ_SQ"
-    ID= Field(primary_key=True)  # 申请流水号
+    ID: str = Field(primary_key=True)  # 申请流水号
     ADDRESS: str
     BAHTFKYY: str
     BCKPJE: str  # 开票金额

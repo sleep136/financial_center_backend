@@ -67,49 +67,48 @@ class BudgetaryFiscalProject(SQLModel, table=True):
     __tablename__ = "zwgkxmzd"  # 财政预算项目字典
     gkxmdm: str = Field(default=None, primary_key=True)  # 预算项目代码
     gkxmmc: str
-    gklxdm: str
-    gkbmbh: str
-    zxbmbh: str
-    zgry: str
-    bnys: str
+    gklxdm: str = Field(default='')
+    gkbmbh: str = Field(default='')
+    zxbmbh: str = Field(default='')
+    zgry: str = Field(default='')
+    bnys: int = Field(default=0)
     gklkxdm: str
     lxnd: str
-    gkyslxdm: str
-    gkfzdm: str
+    gkyslxdm: str = Field(default='')
+    gkfzdm: str = Field(default='')
     lxr: str
     lxsj: str
-    xgr: str
+    xgr: str = Field(default='')
     xgsj: str
-    isgk: str
-    czbbxmdm: str
-    czbbxmmc: str
-    bkwh: str
-    bkyt: str
-    xmlx: str
-    dqnxmdm: str
-    dqnxmmc: str
-    xmzq: str
-    dkrq: str
-    kmbh: str
-    gkjjfldm: str
-    gkyssxdm: str
-    gkzclxdm: str
-    iszfcg: str
-    ye: str
-    gkxmbm: str
-    xmyssx: str
-    yszczjlybh: str
-    gjbmbh: str
-    gjxmbh: str
-    gkxmlb: str
-    zzf: str
-    shtrje: str
-    bz: str
-    isjj: str
-    isky: str
-    iszb: str
-    tzje: str
-    lybh: str
+    isgk: int = Field(default=1)
+    czbbxmdm: str = Field(default='')
+    czbbxmmc: str = Field(default='')
+    bkwh: str = Field(default='')
+    bkyt: str = Field(default='')
+    xmlx: str = Field(default='')
+    dqnxmdm: str = Field(default='')
+    dqnxmmc: str = Field(default='')
+    xmzq: int = Field(default=0)
+    dkrq: str = Field(default='')
+    kmbh: str = Field(default='')
+    gkjjfldm: str = Field(default='')
+    gkyssxdm: str= Field(default='')
+    gkzclxdm: str= Field(default='')
+    iszfcg: str = Field(default='0')
+    ye: int = Field(default=0)
+    # gkxmbm: str
+    # xmyssx: str
+    # yszczjlybh: str
+    # gjbmbh: str
+    # gjxmbh: str
+    # gkxmlb: str
+    # zzf: str
+    # shtrje: str
+    # bz: str
+    # isjj: str
+    # isky: str
+    # iszb: str
+    # tzje: str
 
 
 def check_zbdm_exists(zbdm_list: List[str]) -> dict:
