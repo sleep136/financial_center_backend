@@ -167,13 +167,13 @@ def get_recipe(work_id: str = '', user_name: str = '', company_name: str = ''):
 
         # 逐个添加过滤条件（不会互相覆盖，多条件同时生效）
         if work_id:
-            statement = statement.where(Receipt.JPRGZH == work_id)
+            statement = statement.where(Receipt.USERID == work_id)
         if user_name:
-            statement = statement.where(Receipt.JPRXM == user_name)
+            statement = statement.where(Receipt.USERNAME == user_name)
         if company_name:
             # 关键修改：模糊查询，包含company_name即可匹配
             statement = statement.where(Receipt.DFDWMC.like(f"%{company_name}%"))
-
+        statement = statement.order_by(Receipt.CREATE_TIME.desc())
         # 执行查询
         results = session.exec(statement).all()
 
