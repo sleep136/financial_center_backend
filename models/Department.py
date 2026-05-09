@@ -5,12 +5,11 @@ from typing import Optional, List
 
 
 class Department(SQLModel, table=True):
-    __tablename__ = "pbmdm_gz"
+    __tablename__ = "zwbmzd"
     bmdm: Optional[str] = Field(default=None, primary_key=True)  # 部门编号
     bmmc: str  # 部门名称
-    bmqc: str
+    bmxz: str
     jc: str
-    ismx: str
 
     @classmethod
     def get_all_departments(cls) -> List["Department"]:

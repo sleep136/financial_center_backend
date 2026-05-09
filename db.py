@@ -9,20 +9,20 @@ user_engine = create_engine(user_pgsql_url, pool_recycle=3600,
                             , echo=True)
 
 # 财务库相关配置
-# financial_sql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=GB18030'
+financial_sql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=GB18030'
 
 # # 本地调试时使用
-financial_sql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=GB18030'
+# financial_sql_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=GB18030'
 financial_engine = create_engine(financial_sql_url,
                                  pool_recycle=3600,
                                  pool_pre_ping=True
                                  , echo=True)
 
 # 财务库相关配置
-# financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=UTF-8'
+financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=UTF-8'
 
 # # 本地调试时使用
-financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=UTF-8'
+# financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=UTF-8'
 financial_write_engine = create_engine(financial_sql_write_url, pool_recycle=3600,
                                        pool_pre_ping=True
                                        , echo=True)
@@ -54,9 +54,9 @@ student_expense_engine = create_engine(student_expense_mssql_url, pool_recycle=3
 import oracledb
 
 # 本地调试时使用
-oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
+# oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
 # # windows用应用启动时启用厚模式
-# oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
+oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
 
 # # docker中用
 # oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_11_2")
