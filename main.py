@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from db import  create_db_and_tables
 from routers import login, program, student, authorization, approval_workflow, teacher, indicator, budget, healthy, \
-    receipe
+    receipe,stats
 
 app = FastAPI()
 # CORS 配置
@@ -42,7 +42,7 @@ app.include_router(indicator.router)
 app.include_router(budget.router)
 app.include_router(healthy.router)
 app.include_router(receipe.router)
-
+app.include_router(stats.router)
 
 @app.get("/")
 async def root():

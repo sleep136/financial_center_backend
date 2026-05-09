@@ -4,6 +4,9 @@ from config.settings import settings
 from filelock import FileLock
 import atexit
 
+# 👇 导入你写好的报销统计类
+from script.reimbursement_stats import ReimbursementStats
+
 # --------------------------
 # 全局锁：整个进程唯一抢占
 # --------------------------
@@ -17,14 +20,26 @@ scheduler = None
 try:
     # 抢占锁，只有1个worker能成功
     lock.acquire()
-    print("✅ [Scheduler] 本worker抢占成功，启动定时任务")
+    print("[Scheduler] 本worker抢占成功，启动定时任务")
 
     # 只有抢到锁的进程才初始化调度器
     scheduler = AsyncIOScheduler(timezone="Asia/Shanghai")
 
 except TimeoutError:
     # 其他3个worker直接跳过
-    print("ℹ️ [Scheduler] 其他worker已抢占锁，本worker不启动")
+    print("[Scheduler] 其他worker已抢占锁，本worker不启动")
+
+
+# 👇 新增：报销统计异步任务函数
+async def run_reimbursement_stats():
+    """执行报销统计：生成Excel + 存入Redis + 邮件发送"""
+    try:
+        print("[Scheduler] 开始执行月度报销统计任务...")
+        stats = ReimbursementStats()
+        stats.run()
+        print(f"[Scheduler] 报销统计完成")
+    except Exception as e:
+        print(f"[Scheduler] 报销统计任务失败：{str(e)}")
 
 
 def start_scheduler():
@@ -38,7 +53,7 @@ def start_scheduler():
     if scheduler.running:
         return
 
-    # 只添加一次
+    # 原有健康检查任务（保留）
     scheduler.add_job(
         run_all_health_checks,
         trigger="interval",
@@ -47,8 +62,19 @@ def start_scheduler():
         replace_existing=True
     )
 
+    # 👇 新增：月度报销统计任务（每月1号凌晨2点执行）
+    scheduler.add_job(
+        run_reimbursement_stats,
+        trigger="cron",
+        day=1,        # 每月1号
+        hour=2,       # 凌晨2点
+        minute=0,
+        id="reimbursement_stats_job",
+        replace_existing=True
+    )
+
     scheduler.start()
-    print("✅ [Scheduler] 健康检查定时任务已启动")
+    print("[Scheduler] 健康检查 + 报销统计 定时任务已启动")
 
 
 # 程序退出时自动释放锁
