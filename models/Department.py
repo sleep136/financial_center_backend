@@ -2,11 +2,15 @@ from typing import Optional
 from db import financial_engine
 from sqlmodel import SQLModel, Field, Session, select
 from typing import Optional, List
-
+from sqlalchemy import Column
 
 class Department(SQLModel, table=True):
     __tablename__ = "zwbmzd"
-    bmdm: Optional[str] = Field(default=None, primary_key=True)  # 部门编号
+    bmdm: Optional[str] = Field(
+        default=None,
+        primary_key=True,
+        sa_column=Column(name="bmbh")  # 映射到数据库真实字段 bmbh
+    )
     bmmc: str  # 部门名称
     bmxz: str
     jc: str
