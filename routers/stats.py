@@ -58,14 +58,29 @@ def get_month_trend(year: str = None):
 # ------------------------------------------------------------------------------
 # 4. 获取供应商金额排名 TOP10（柱状图）
 # ------------------------------------------------------------------------------
-@router.get("/stats/supplier", summary="获取供应商报销金额TOP10")
+@router.get("/stats/supplier", summary="获取供应商报销金额TOP50")
 def get_supplier_rank(year: str = None):
     if not year:
         year = datetime.now().strftime("%Y")
     key = f"rank:supplier:{year}"
-    # ZSet 倒序取前10
-    rank_list = redis.zrevrange(key, 0, 9, withscores=True)
-    result = [{"supplier": item[0], "amount": round(item[1], 2)} for item in rank_list]
+    # 👈 从 10 改成 50
+    rank_list = redis.zrevrange(key, 0, 49, withscores=True)
+
+    result = []
+    for supplier, amount in rank_list:
+        # 👇 从明细里拿 发票数量
+        detail_key = f"report:detail:supplier:{year}"
+        detail_data = redis.get(detail_key)
+        count = 0
+        if detail_data:
+            details = json.loads(detail_data)
+            count = len(details.get(supplier, []))
+
+        result.append({
+            "supplier": supplier,
+            "amount": round(amount, 2),
+            "count": count  # 👈 新增发票数
+        })
     return result
 
 # ------------------------------------------------------------------------------

@@ -109,11 +109,11 @@ class ReimbursementStats:
         return df_merged
 
     # ======================
-    # 4. 供应商分析（>20）
+    # 4. 供应商分析（>5）
     # ======================
     def analyze_supplier(self, df_merged, dept_map):
         supplier_counts = df_merged["KPDWMC"].value_counts()
-        targets = supplier_counts[supplier_counts > 20].index
+        targets = supplier_counts[supplier_counts > 10].index
         result = []
         month_trend = {}
         supplier_details = {}
