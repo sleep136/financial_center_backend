@@ -64,3 +64,10 @@ oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
 reimbursement_sql_url = "oracle+oracledb://ghwsyy:ghwsyy@172.31.22.229:1521/ORCL"
 reimbursement_engine = create_engine(reimbursement_sql_url, pool_recycle=3600,
                                      pool_pre_ping=True, echo=True)
+
+# 中间库配置
+intermediate_database_url = "mysql+pymysql://root:22861626@172.31.22.3:3306/jobs"
+intermediate_database_engine = create_engine(intermediate_database_url, pool_recycle=3600,
+                            pool_pre_ping=True
+                            , echo=True)
+
