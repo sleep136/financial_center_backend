@@ -92,27 +92,27 @@ class Student_Charging_Info(SQLModel, table=True):  # 收费系统学生信息�
     XH: str = Field(primary_key=True)  # 学号
     XM: str  # 姓名
     XB: str   # 性别
-    ZJM: str
-    ISLS: str
-    RXND: str
-    LXND: str
-    BMDM: str
-    ZYDM: str
+    ZJM: str  #  助记码
+    ISLS: str  # 无效字段
+    RXND: str  # 入学年度
+    LXND: str  # 离校年度
+    BMDM: str  # 部门代码
+    ZYDM: str  # 专业代码
     BJDM: str # 班级代码
-    XSXZDM: str
-    XSLYDM: str
-    CSRQ: str
-    JTZZ: str
+    XSXZDM: str # 学生性质代码
+    XSLYDM: str #  学生来源代码
+    CSRQ: str  #   出生日期
+    JTZZ: str # 家庭住址
     YYDM: str
     YHZH: str  # 银行账号
-    ICKH: str
-    SFZH: str
-    ISOK: str
-    BZ: str
-    SSDQ: str
-    XSZTDM: str
-    BDYY: str
-    ISFFBZJ: str
+    ICKH: str  # IC卡号
+    SFZH: str  # 身份证号
+    ISOK: str  # 是否启动
+    BZ: str  # 备注
+    SSDQ: str # 所属地区
+    XSZTDM: str # 学生状态代码
+    BDYY: str  # 变动原因
+    ISFFBZJ: str  # 是否发放补助
     XSSX1: str
     XSSX2: str
     XSSX3: str
@@ -127,47 +127,28 @@ class Student_Charging_Info(SQLModel, table=True):  # 收费系统学生信息�
     UF_08: str
     UF_09: str
     UF_10: str
-    XZ: str
-    XSLBDM: str
-    XMJC: str
-    TEL: str
-    EMAIL: str
-    ZJLBDM: str
-    KSH: str
-    MZDM: str
-    ISJM: str
-    dwjgbm: str
-    FXDM: str
-    XGRQ: str
-    XGR: str
-    ssdm: str
-    ISSXLW: str
-    SXLWSJ: str
-    JSFA: str
+    XZ: str  # 学制
+    XSLBDM: str #  学生类别代码
+    XMJC: str  # 姓名简称
+    TEL: str  # 手机号
+    EMAIL: str  # 电子邮箱
+    ZJLBDM: str  #
+    KSH: str # 考生号
+    MZDM: str # 民族代码
+    ISJM: str  # 是否剧名
+    dwjgbm: str  # 单位机构代码
+    FXDM: str  # 校区代码
+    XGRQ: str  # 修改日期
+    XGR: str  #修改人
+    ssdm: str  # 宿舍代码
+    ISSXLW: str  # 是否时许劳务
+    SXLWSJ: str  # 实习劳务时间
+    JSFA: str  # 计税方案
+    zhlb: str # 账号类别
+    yh: str # 开户行
+    khhmc: str # 开户行名称
+    lhh: str  # 联行号
 
-    yh: str
-    khhmc: str
-    lhh: str
-    YH1: str
-    YHZH1: str
-    KHHMC1: str
-    LHH1: str
-    YH2: str
-    YHZH2: str
-    KHHMC2: str
-    LHH2: str
-    YH3: str
-    YHZH3: str
-    KHHMC3: str
-    LHH3: str
-    YH4: str
-    YHZH4: str
-    KHHMC4: str
-    LHH4: str
-    YH5: str
-    YHZH5: str
-    KHHMC5: str
-    LHH5: str
 
 class  Class_Info(SQLModel, table=True):  # 收费系统班级表
     __tablename__ = "PBJDM"

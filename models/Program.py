@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, select, Session
 from typing import Optional
-from db import financial_engine
+from db import financial_engine, financial_engine_2025
 
 
 class Program(SQLModel, table=True):
@@ -164,6 +164,28 @@ def get_program_by_owner_id(work_id: str):
         statement = select(Program).where(Program.fzrbh == work_id, Program.isfb == '1')
         results = session.execute(statement)
         if results:
-            return  results.scalars().all()
+            return results.scalars().all()
+
 
 # Program.metadata.create_all(financial_engine)
+
+def get_program_by_xmbh_exact_3digits(bmbh: str, xmbh_prefix: str,year:int):
+    """
+    按部门编号完全匹配 + 项目编号前缀后紧跟3个数字（不多不少）查询项目
+    :param bmbh: 部门编号（完全匹配）
+    :param xmbh_prefix: 项目编号前缀（默认25110）
+    :return: 匹配的项目列表
+    """
+    if year == 2025:
+        engine = financial_engine_2025
+    else:
+        engine = financial_engine
+    with Session(engine) as session:
+        statement = select(Program).where(
+            # 1. 部门编号 完全匹配
+            Program.bmbh == bmbh,
+            # 2. 项目编号：前缀 + 刚好3个数字
+            Program.xmbh.like(f"%{xmbh_prefix}[0-9][0-9][0-9]"))
+
+        results = session.exec(statement).all()
+        return results

@@ -20,7 +20,7 @@ class Voucher(SQLModel, table=True):
     hl: str  #
     jsbh: str
     jsdh: str
-    ywrq: str
+    ywrq: str # 业务日期
     dfdw: str
     yhdz: str
     jwb: str
@@ -183,13 +183,14 @@ def get_breakdown_by_department_program_id(department_id: str, program_id: str, 
     with Session(engine) as session:
         statement = select(Voucher).where(Voucher.bmbh == department_id, Voucher.xmbh == program_id, Voucher.dje > 0,
                                           Voucher.gklkxdm != '', Voucher.kmbh == '9002')
+
         results = session.exec(statement).all()
         if results:
             return results
 
 def get_breakdown_by_voucher_id(department_id: str, program_id: str, year: int = 2026):
     """
-    通过项目编号获取预算下发明细
+    通过项目编号获取预算所有明细
     :param program_id:
     :return:
     """
@@ -208,6 +209,44 @@ def get_breakdown_by_voucher_id(department_id: str, program_id: str, year: int =
         results = session.exec(statement).all()
         if results:
             return results
+
+
+def get_breakdown_total_amount_by_department_program_id(department_id: str, program_id: str, year: int = 2026):
+    """
+    通过项目编号获取预算下发合计金额
+    :param department_id: 部门编号
+    :param program_id: 项目编号
+    :param year: 年份，默认2026
+    :return: dje字段的合计金额
+    """
+    # 根据年份选择对应的数据库引擎
+    if year == 2026:
+        engine = financial_engine
+    elif year == 2025:
+        engine = financial_engine_2025
+    elif year == 2024:
+        engine = financial_engine_2024
+    else:
+        engine = financial_engine
+
+    with Session(engine) as session:
+        # 构建查询条件
+        statement = select(Voucher).where(
+            Voucher.bmbh == department_id,
+            Voucher.xmbh == program_id,
+            Voucher.dje > 0,
+            Voucher.gklkxdm != '',
+            Voucher.kmbh == '9002'
+        )
+
+        # 执行查询获取所有结果
+        results = session.exec(statement).all()
+
+        # 计算dje的总和
+        total_amount = sum(voucher.dje for voucher in results) if results else 0
+
+        return total_amount
+
 
 def get_date_by_voucher_id(voucher_id_list:list, year: int = 2026):
     if year == 2026:

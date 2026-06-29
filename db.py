@@ -54,9 +54,9 @@ student_expense_engine = create_engine(student_expense_mssql_url, pool_recycle=3
 import oracledb
 
 # 本地调试时使用
-# oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
+oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
 # # windows用应用启动时启用厚模式
-oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
+# oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
 
 # # docker中用
 # oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_11_2")
