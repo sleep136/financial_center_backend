@@ -79,7 +79,7 @@ def get_accommodation_info(student_id):
                 room_num=info.fjh,
                 bed_num=info.cwh,
                 check_in_date=info.ruzrq,
-                check_out_date=info.qcrq,
+                check_out_date=info.qcrq if info.qcrq else '',
             ))
     return list_accommodation
 
