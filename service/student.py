@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from models.Student import get_student_toll, get_student_info
-from models.Accommodation import get_accommodation_info_by_student_id
+from models.Accommodation import get_accommodation_info_by_student_id,get_graduate_accommodation_info_by_student_id
 from models.StudentStatusChange import get_change_info_by_student_id
 
 
@@ -46,6 +46,11 @@ def get_expense(student_id):
 
 
 def get_accommodation_info(student_id):
+    """
+    获取学生住宿信息
+    :param student_id:
+    :return:
+    """
     infos = get_accommodation_info_by_student_id(student_id)
     list_accommodation = []
     for info in infos:
@@ -61,6 +66,21 @@ def get_accommodation_info(student_id):
             check_in_date=info.ruzrq,
             check_out_date=info.qcrq,
         ))
+    grauate_infos =get_graduate_accommodation_info_by_student_id(student_id)
+    if grauate_infos:
+        for info in grauate_infos:
+            list_accommodation.append(AccommodationInfo(
+                id='',
+                student_id=info.xh,
+                campus="松山湖",
+                community="新区",
+                dormitory_building=info.ldm,
+                floor=info.lcm,
+                room_num=info.fjh,
+                bed_num=info.cwh,
+                check_in_date=info.ruzrq,
+                check_out_date=info.qcrq,
+            ))
     return list_accommodation
 
 

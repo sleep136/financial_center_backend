@@ -27,3 +27,29 @@ def get_accommodation_info_by_student_id(student_id: str)  :
         statement = select(Accommodation).where(Accommodation.xh == student_id)
         user = session.exec(statement).all()
         return user
+
+
+class GraduateAccommodation(SQLModel, table=True):
+    __tablename__ = "t_cwxt_yjszssj"
+
+
+    xh: str= Field(default=None, primary_key=True)  # 学号
+    xm : str # 姓名
+
+    ssdwmc: str # 学院名
+    nj: str  # 年级
+    zymc: str  # 专业名
+    xslb: str  # 学生类别
+    ldbh: str # 楼层号
+    ldm: str # 楼层名
+    fjh: str # 房间号
+    cwh: str  # 床位号
+    ruzrq: str= Field(default=None, primary_key=True)   # 入住日期
+    qcrq: str # 迁出日期
+    sflps: str
+
+def get_graduate_accommodation_info_by_student_id(student_id: str)  :
+    with Session(intermediate_database_engine) as session:
+        statement = select(GraduateAccommodation).where(Accommodation.xh == student_id)
+        user = session.exec(statement).all()
+        return user
