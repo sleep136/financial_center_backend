@@ -66,6 +66,7 @@ def get_accommodation_info(student_id):
             check_in_date=info.ruzrq,
             check_out_date=info.qcrq,
         ))
+
     grauate_infos =get_graduate_accommodation_info_by_student_id(student_id)
     if grauate_infos:
         for info in grauate_infos:

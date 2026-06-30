@@ -50,6 +50,6 @@ class GraduateAccommodation(SQLModel, table=True):
 
 def get_graduate_accommodation_info_by_student_id(student_id: str)  :
     with Session(intermediate_database_engine) as session:
-        statement = select(GraduateAccommodation).where(Accommodation.xh == student_id)
+        statement = select(GraduateAccommodation).where(GraduateAccommodation.xh == student_id)
         user = session.exec(statement).all()
         return user
