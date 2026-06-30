@@ -75,7 +75,7 @@ def get_accommodation_info(student_id):
                 campus="松山湖",
                 community="新区",
                 dormitory_building=info.ldm,
-                floor=info.lcm,
+                floor=info.ldm,
                 room_num=info.fjh,
                 bed_num=info.cwh,
                 check_in_date=info.ruzrq,
