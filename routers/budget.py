@@ -20,7 +20,7 @@ async def get_program(program_id: str, department_id: str, year: int, start_mont
     return budgets
 
 
-@router.get("/budget/programs")
+@router.post("/budget/programs")
 async def get_batch_programs(file: UploadFile = File(...)):
     """
     上传Excel文件并读取为DataFrame
@@ -39,7 +39,8 @@ async def get_batch_programs(file: UploadFile = File(...)):
             dtype=str,  # 所有列作为字符串
             engine='openpyxl'  # 明确指定引擎（对于.xlsx文件）
         )
-
+        if df_input1.shape[0] > 500:
+            raise HTTPException(status_code=500, detail="单次不支持处理超过500条数据")
         error_msg = find_null_values(df_input1)
         if error_msg:
             raise HTTPException(status_code=500, detail=f"{error_msg}")
@@ -47,6 +48,6 @@ async def get_batch_programs(file: UploadFile = File(...)):
         list_count, list_error_msg = get_budget_stats(df_input1)
 
 
-        return {"data":list_count,"error_list":list_error_msg}
+        return {"data_list":list_count,"error_list":list_error_msg}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"文件处理失败: {str(e)}")

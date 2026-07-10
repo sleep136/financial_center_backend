@@ -62,11 +62,12 @@ def get_budget_stats(df_input1):
     for index, item in df_input1.iterrows():
         try:
             list_budget = get_budget_breakdown(item['财务编号'], item['部门编号'])
-            total = sum(item["amount"] for item in list_budget)
-            list_output.append({'program_id':item['财务编号'], 'department_id':item['部门编号'], '已下发预算':total})
+            total = sum(item.amount for item in list_budget)
+            list_output.append({'program_id':item['财务编号'], 'department_id':item['部门编号'], 'total':total, 'detail':list_budget})
         except Exception as e:
+            logger.error(e)
             list_error.append(f"财务编号：{item['财务编号']}部门编号：{item['部门编号']} 数据异常")
-    return list_budget, list_error
+    return list_output, list_error
 
 
 def find_null_values(df):
