@@ -54,9 +54,9 @@ student_expense_engine = create_engine(student_expense_mssql_url, pool_recycle=3
 import oracledb
 
 # 本地调试时使用
-# oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
+oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
 # # windows用应用启动时启用厚模式
-oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
+# oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
 
 # # docker中用
 # oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_11_2")
@@ -70,4 +70,11 @@ intermediate_database_url = "mysql+pymysql://root:22861626@172.31.22.3:3306/jobs
 intermediate_database_engine = create_engine(intermediate_database_url, pool_recycle=3600,
                             pool_pre_ping=True
                             , echo=True)
+
+# 采购库配置
+purchase_database_url = "mysql+pymysql://dgut_cw:Dgut#2026Cw88@172.31.60.112:3307/dgut_purchase"
+purchase_database_engine = create_engine(purchase_database_url, pool_recycle=3600,
+                            pool_pre_ping=True
+                            , echo=True)
+
 

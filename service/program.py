@@ -1,14 +1,14 @@
-from models.Program import get_program_by_program_id, get_program_by_program_id_and_department_id,get_program_by_owner_id
+from models.Program import get_program_by_program_id, get_program_by_program_id_and_department_id, \
+    get_program_by_owner_id
 from models.Reimbursement import get_reimbursement_by_program_id, get_reimbursement_in_transit_by_program_id, \
     get_reimbursement_by_work_id, get_reimbursement_by_owner_id
-from models.ProgramFreeze import get_freeze_details
-from models.LaborCost import get_labor_cost_by_program_id,get_labor_cost_by_work_id,get_labor_cost_by_program_list
+from models.ProgramFreeze import get_freeze_details, get_purchase_plannings
+from models.LaborCost import get_labor_cost_by_program_id, get_labor_cost_by_work_id, get_labor_cost_by_program_list
 from models.Voucher import get_voucher_by_department_program_id
+from models.PurchasePlanning import get_batch_plan_simple_info
 from pydantic import BaseModel
 from utils.logging import logger
 import json
-
-
 
 dict_subjects_code = {"0101": "设备费",
                       "0201": '材料费',
@@ -90,7 +90,7 @@ def get_freeze_detail(program_id: str, department_id: str):
     program_id = str(program_id)
     freeze_details = get_freeze_details(department_id, program_id)
     if not freeze_details:
-        return False
+        freeze_details = []
     list_program_details = []
     for freeze_detail in freeze_details:
         list_program_details.append(ProgramFreeze(program_id=freeze_detail.xmbh, department_id=freeze_detail.bmbh,
@@ -101,7 +101,28 @@ def get_freeze_detail(program_id: str, department_id: str):
                                                   review_date=freeze_detail.shrq,
                                                   business_order_number=freeze_detail.ywdh,
                                                   hedge_number=freeze_detail.xgr))
-    return list_program_details
+    purchase_freeze_details = get_purchase_plannings(program_id)
+    dict_purchase_info = {}
+    if purchase_freeze_details:
+        list_purchase_detail_ids = [purchase_freeze_detail.jh_id for purchase_freeze_detail in purchase_freeze_details]
+        plan_simple_infos = get_batch_plan_simple_info(list_purchase_detail_ids)
+        for plan_simple_info in plan_simple_infos:
+            dict_purchase_info[plan_simple_info.id] = plan_simple_info
+    list_purchase_detail = []
+    for purchase_detail in purchase_freeze_details:
+
+        list_purchase_detail.append(PurchaseProgramFreeze(program_id=purchase_detail.jf_no,
+                                                          planning_id=purchase_detail.jh_id,
+                                                          is_financial=purchase_detail.jf_is_cwxt,
+                                                          freeze_number=purchase_detail.jf_cwxt_djje,
+                                                          freeze_id=purchase_detail.jh_jf_bak5,
+                                                          planning_name=dict_purchase_info[purchase_detail.jh_id].jh_name,
+                                                          planning_no=dict_purchase_info[purchase_detail.jh_id].jh_no))
+
+    return {"financial_freeze":list_program_details,
+            "purchase_freeze":list_purchase_detail
+
+    }
 
 
 def get_reimbursement_detail(program_id: int, department_id: int, filter_state: int = 1):
@@ -327,12 +348,13 @@ def get_labor_costs_by_work_id(work_id, is_filter):
                                                      program_id=v['program_id'],
                                                      department_id=v['department_id'],
                                                      abstract=v['abstract'],
-                                                     operator=v['operator'] if v['operator'] else '' ,
+                                                     operator=v['operator'] if v['operator'] else '',
                                                      state=v['state'],
                                                      amount=v['amount'],
                                                      type=v['type'],
                                                      ))
     return list_labor_cost_details
+
 
 def get_reimbursements_by_owner_id(work_id, is_filter):
     is_filter = (is_filter == 1)
@@ -352,6 +374,7 @@ def get_reimbursements_by_owner_id(work_id, is_filter):
                                                         state=reimbursement.ZT).model_dump())
     return list_reimbursement_details
 
+
 def get_labor_costs_by_owner_id(work_id, is_filter):
     programs = get_program_by_owner_id(work_id)
     program_str_list = []
@@ -360,11 +383,12 @@ def get_labor_costs_by_owner_id(work_id, is_filter):
             f"programs: {programs}  ")
         for program in programs:
             program_str_list.append(
-                str(program.bmbh)+'-'+str(program.xmbh))
+                str(program.bmbh) + '-' + str(program.xmbh))
     else:
         return []
     is_filter = is_filter == 1
-    on_campus_results, off_campus_results, student_cost_results = get_labor_cost_by_program_list(program_str_list, is_filter)
+    on_campus_results, off_campus_results, student_cost_results = get_labor_cost_by_program_list(program_str_list,
+                                                                                                 is_filter)
 
     logger.info(
         f"on_campus_results: {on_campus_results} off_campus_results: {off_campus_results} student_cost_results: {student_cost_results} ")
@@ -423,7 +447,7 @@ def get_labor_costs_by_owner_id(work_id, is_filter):
                                                      program_id=v['program_id'],
                                                      department_id=v['department_id'],
                                                      abstract=v['abstract'],
-                                                     operator=v['operator'] if v['operator'] else '' ,
+                                                     operator=v['operator'] if v['operator'] else '',
                                                      state=v['state'],
                                                      amount=v['amount'],
                                                      type=v['type'],
@@ -449,6 +473,16 @@ class ProgramFreeze(BaseModel):
     review_date: str
     business_order_number: str
     hedge_number: str
+
+
+class PurchaseProgramFreeze(BaseModel):
+    program_id: str
+    planning_id: int
+    is_financial: int
+    freeze_number: float
+    freeze_id: str
+    planning_name: str
+    planning_no: str
 
 
 class Reimbursement(BaseModel):
