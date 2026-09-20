@@ -5,7 +5,7 @@ from db import reimbursement_engine
 
 class ApprovalWorkflow(SQLModel, table=True):
     __tablename__ = "TC_SPXXDL"
-    __table_args__ = {'schema': "UAP"}
+    __table_args__ = {'schema': "UAPCS"}
     PID: str = Field(primary_key=True)
     YWLSH: str  # 业务流水号
     MKDM: str  # 模块代码
