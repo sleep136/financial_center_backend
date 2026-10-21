@@ -3,8 +3,8 @@ from models.ApprovalWorkflow import get_approval_workflow_by_business_id, get_ap
 import json
 import logging
 
-
 logger = logging.getLogger(__name__)
+
 
 def get_workflow_by_business_id(business_id: str):
     """
@@ -14,27 +14,28 @@ def get_workflow_by_business_id(business_id: str):
     """
     approval_workflows = get_approval_workflow_by_business_id(business_id)
     list_workflows = []
+    if approval_workflows:
 
-    for approval_workflow in approval_workflows:
-        approval_date = approval_workflow.SPRQ if approval_workflow.SPRQ else ""
-        approver = approval_workflow.SPR if approval_workflow.SPR else ""
-        list_workflows.append(
-            ApprovalWorkflowDataObject(business_id=approval_workflow.YWLSH,
-                                       business_type=approval_workflow.YWBH,
-                                       applicants_id=approval_workflow.SQRBH,
-                                       applicants_name=approval_workflow.SQR,
-                                       apply_date=approval_workflow.SQRQ,
-                                       approver=approver,
-                                       approval_date=approval_date,
-                                       approval_state=approval_workflow.SPZT,
-                                       approval_sort=approval_workflow.SPJB,
-                                       approval_role=approval_workflow.SPJS,
-                                       abstract=approval_workflow.SQNR
-                                       ))
+        for approval_workflow in approval_workflows:
+            approval_date = approval_workflow.SPRQ if approval_workflow.SPRQ else ""
+            approver = approval_workflow.SPR if approval_workflow.SPR else ""
+            list_workflows.append(
+                ApprovalWorkflowDataObject(business_id=approval_workflow.YWLSH,
+                                           business_type=approval_workflow.YWBH,
+                                           applicants_id=approval_workflow.SQRBH,
+                                           applicants_name=approval_workflow.SQR,
+                                           apply_date=approval_workflow.SQRQ,
+                                           approver=approver,
+                                           approval_date=approval_date,
+                                           approval_state=approval_workflow.SPZT,
+                                           approval_sort=approval_workflow.SPJB,
+                                           approval_role=approval_workflow.SPJS,
+                                           abstract=approval_workflow.SQNR
+                                           ))
     return list_workflows
 
 
-def get_workflow_by_work_id(work_id: str, state:int=-1):
+def get_workflow_by_work_id(work_id: str, state: int = -1):
     """
     通过工作流编号获取工作流信息
     :param work_id: 工作流编号
@@ -43,27 +44,28 @@ def get_workflow_by_work_id(work_id: str, state:int=-1):
     approval_workflows = get_approval_workflow_by_work_id(work_id)
 
     dict_workflows = {}
-    for approval_workflow in approval_workflows:
-        if approval_workflow.YWLSH in dict_workflows:
-            if dict_workflows[approval_workflow.YWLSH]['approval_state'] == 2:
-                continue
-            if approval_workflow.SPJB < dict_workflows[approval_workflow.YWLSH]['approval_sort']:
-                continue
+    if approval_workflows:
+        for approval_workflow in approval_workflows:
+            if approval_workflow.YWLSH in dict_workflows:
+                if dict_workflows[approval_workflow.YWLSH]['approval_state'] == 2:
+                    continue
+                if approval_workflow.SPJB < dict_workflows[approval_workflow.YWLSH]['approval_sort']:
+                    continue
 
-        dict_workflows[approval_workflow.YWLSH] = {
-            'business_id': approval_workflow.YWLSH,
-            'business_type': approval_workflow.YWBH,
-            'applicants_id': approval_workflow.SQRBH,
-            'applicants_name': approval_workflow.SQR,
-            'apply_date': approval_workflow.SQRQ,
-            'approver': approval_workflow.SPR,
-            'approval_date': approval_workflow.SPRQ,
-            'approval_state': approval_workflow.SPZT,
-            'approval_sort': approval_workflow.SPJB,
-            'approval_role': approval_workflow.SPJS,
-            'abstract': approval_workflow.SQNR
+            dict_workflows[approval_workflow.YWLSH] = {
+                'business_id': approval_workflow.YWLSH,
+                'business_type': approval_workflow.YWBH,
+                'applicants_id': approval_workflow.SQRBH,
+                'applicants_name': approval_workflow.SQR,
+                'apply_date': approval_workflow.SQRQ,
+                'approver': approval_workflow.SPR,
+                'approval_date': approval_workflow.SPRQ,
+                'approval_state': approval_workflow.SPZT,
+                'approval_sort': approval_workflow.SPJB,
+                'approval_role': approval_workflow.SPJS,
+                'abstract': approval_workflow.SQNR
 
-        }
+            }
 
     list_workflows = []
 
@@ -88,7 +90,6 @@ def get_workflow_by_work_id(work_id: str, state:int=-1):
                                        ))
     state = str(state)
     if state != "-1":
-
         list_workflows = [item for item in list_workflows if item.approval_state == state]
     return list_workflows
 
