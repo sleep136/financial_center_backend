@@ -19,7 +19,7 @@ financial_engine = create_engine(financial_sql_url,
                                  , echo=True)
 
 # 财务库相关配置
-financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=UTF-8'
+financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.168:1433/gxcw60?tds_version=7.0&charset=GB18030'
 
 # # 本地调试时使用
 # financial_sql_write_url = 'mssql+pymssql://tc_gxcw60:gxcw60@172.31.22.80:1433/gxcw60?tds_version=7.0&charset=UTF-8'
