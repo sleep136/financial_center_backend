@@ -52,14 +52,23 @@ student_expense_engine = create_engine(student_expense_mssql_url, pool_recycle=3
 #     SQLModel.metadata.create_all(user_engine, checkfirst=True)
 #     SQLModel.metadata.create_all(financial_engine, checkfirst=True)
 import oracledb
+import logging
 
-# 本地调试时使用
-oracledb.init_oracle_client(lib_dir="D:\instantclient_11_2")
-# # windows用应用启动时启用厚模式
-# oracledb.init_oracle_client(lib_dir="F:\instantclient_11_2")
+logger = logging.getLogger(__name__)
 
-# # docker中用
-# oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient/instantclient_11_2")
+# Oracle 客户端初始化（支持 graceful fallback）
+try:
+    # 本地调试时使用
+    oracledb.init_oracle_client(lib_dir="D:\\instantclient_11_2")
+    logger.info("Oracle 客户端初始化成功 (D:\\instantclient_11_2)")
+except Exception as e:
+    try:
+        # 服务器环境尝试其他路径
+        oracledb.init_oracle_client(lib_dir="F:\\instantclient_11_2")
+        logger.info("Oracle 客户端初始化成功 (F:\\instantclient_11_2)")
+    except Exception as e2:
+        logger.warning(f"Oracle 客户端初始化失败，将使用 thin 模式：{str(e2)}")
+        # 不阻塞启动，oracledb 会自动使用 thin 模式
 # 报销库相关配置
 reimbursement_sql_url = "oracle+oracledb://ghwsyy:ghwsyy@172.31.22.229:1521/ORCL"
 reimbursement_engine = create_engine(reimbursement_sql_url, pool_recycle=3600,

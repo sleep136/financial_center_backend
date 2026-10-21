@@ -38,7 +38,8 @@ def get_receipt_flow_by_ywlsh(ywlsh: str) -> list[ReceiptFlowStatus]:
             # 处理每条记录
             for row in rows:
                 status = _map_wlb_status(row)
-                remark = str(row.clsm or row.bz or "")
+                remark = str(row.clsm or "")
+                detail = str(row.bz or "")
                 if row.wlbh:
                     remark = f"{remark} 物流编号:{str(row.wlbh)}" if remark else f"物流编号:{str(row.wlbh)}"
                 
@@ -48,7 +49,8 @@ def get_receipt_flow_by_ywlsh(ywlsh: str) -> list[ReceiptFlowStatus]:
                     handler=str(row.clr or ""),
                     remark=remark,
                     process_time=_format_datetime_from_full(row.clsj),
-                    status=status
+                    status=status,
+                    info=detail
                 ))
                 
     except Exception as e:

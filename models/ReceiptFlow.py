@@ -10,6 +10,7 @@ class ReceiptFlowStatus(BaseModel):
     remark: str  # 备注
     process_time: str  # 处理时间
     status: str  # 处理状态
+    info: str  # 项目信息
 
 
 class ReceiptFlowRecord(BaseModel):
