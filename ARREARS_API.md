@@ -49,6 +49,14 @@ GET /arrears-students/details/2025/2025
 }
 ```
 
+### 1b. 获取所有年度欠费学生明细
+**请求：**
+```
+GET /arrears-students/details/all/all
+```
+
+**说明：** 不过滤年级和收费年度，返回所有欠费学生明细。响应格式同上，`grade` 和 `fee_year` 均为 `"all"`。
+
 ### 2. 按年级统计欠费
 **请求：**
 ```
@@ -69,6 +77,14 @@ GET /arrears-students/statistics/grade/2025
 }
 ```
 
+### 2b. 按年级统计欠费（所有收费年度）
+**请求：**
+```
+GET /arrears-students/statistics/grade/all
+```
+
+**说明：** 不过滤收费年度，按年级统计所有年度的欠费学生人数。响应格式同上，`fee_year` 为 `"all"`。
+
 ### 3. 按学院统计欠费
 **请求：**
 ```
@@ -86,6 +102,14 @@ GET /arrears-students/statistics/department/2025
   ]
 }
 ```
+
+### 3b. 按学院统计欠费（所有收费年度）
+**请求：**
+```
+GET /arrears-students/statistics/department/all
+```
+
+**说明：** 不过滤收费年度，按学院统计所有年度的欠费学生人数。响应格式同上，`fee_year` 为 `"all"`。
 
 ### 4. 获取指定学院的欠费学生明细
 **请求：**
@@ -111,6 +135,15 @@ GET /arrears-students/department/2024/2025/102
 ```
 
 `students` 数组元素结构同接口 1。
+
+### 4b. 获取指定学院的欠费学生明细（所有年度）
+**请求：**
+```
+GET /arrears-students/department/all/all/{department_code}
+GET /arrears-students/department/all/all/102
+```
+
+**说明：** 不过滤年级和收费年度，返回指定学院的所有欠费学生明细。响应格式同上，`grade` 和 `fee_year` 均为 `"all"`。
 
 ## 查询条件
 

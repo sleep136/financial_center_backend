@@ -36,7 +36,7 @@ class ArrearsStatisticsByDepartment(SQLModel):
     student_count: int  # 欠费学生人数
 
 
-def get_arrears_students(grade: str, fee_year: str,
+def get_arrears_students(grade: Optional[str] = None, fee_year: Optional[str] = None,
                          department_code: Optional[str] = None) -> List[ArrearsStudentDetail]:
     """
     获取欠费学生明细
@@ -44,17 +44,19 @@ def get_arrears_students(grade: str, fee_year: str,
     学生年级取 PXSDM.RXND，收费年度取 SF_ZZ.SFQJDM，两者是相互独立的维度：
     同一收费年度下的欠费学生可能来自多个年级。
 
-    :param grade: 学生年级（入学年度，如 "2025"）
-    :param fee_year: 收费年度（收费期间代码，如 "2025"）
+    :param grade: 学生年级（入学年度，如 "2025"），None 表示不过滤年级
+    :param fee_year: 收费年度（收费期间代码，如 "2025"），None 表示不过滤收费年度
     :param department_code: 学院代码，传入时只返回该学院的欠费学生
     :return: 欠费学生明细列表
     """
     with Session(student_expense_engine) as session:
         conditions = [
-            Student_Charging_Info.RXND == grade,  # 学生年级
-            Student_Toll.SFQJDM == fee_year,  # 收费年度
             Student_Toll.SFXMDM.in_(['01', '02']),  # 收费项目：01=学费，02=住宿费（默认过滤）
         ]
+        if grade:
+            conditions.append(Student_Charging_Info.RXND == grade)
+        if fee_year:
+            conditions.append(Student_Toll.SFQJDM == fee_year)
         if department_code:
             conditions.append(Student_Charging_Info.BMDM == department_code)
 
@@ -111,15 +113,21 @@ def get_arrears_students(grade: str, fee_year: str,
         return arrears_list
 
 
-def _arrears_students_subquery(fee_year: str):
+def _arrears_students_subquery(fee_year: Optional[str] = None):
     """
     构建"欠费学生"子查询：先按学号聚合出每个学生在指定收费年度的应交/实缴，再筛出欠费的学生。
 
     SQL Server 不允许聚合函数嵌套聚合函数（sum(sum(...)) 会报错 130），
     因此必须先在内层按学号分组算出欠费金额，外层再按年级/学院统计人数。
 
-    :param fee_year: 收费年度（SF_ZZ.SFQJDM）
+    :param fee_year: 收费年度（SF_ZZ.SFQJDM），None 表示不过滤收费年度
     """
+    where_conditions = [
+        Student_Toll.SFXMDM.in_(['01', '02']),  # 收费项目：01=学费，02=住宿费（默认过滤）
+    ]
+    if fee_year:
+        where_conditions.append(Student_Toll.SFQJDM == fee_year)
+
     return (
         select(
             Student_Charging_Info.XH,
@@ -127,10 +135,7 @@ def _arrears_students_subquery(fee_year: str):
             Student_Charging_Info.BMDM
         )
         .join(Student_Toll, Student_Charging_Info.XH == Student_Toll.XH)
-        .where(
-            Student_Toll.SFQJDM == fee_year,
-            Student_Toll.SFXMDM.in_(['01', '02']),  # 收费项目：01=学费，02=住宿费（默认过滤）
-        )
+        .where(*where_conditions)
         .group_by(
             Student_Charging_Info.XH,
             Student_Charging_Info.RXND,
@@ -141,11 +146,11 @@ def _arrears_students_subquery(fee_year: str):
     )
 
 
-def get_arrears_statistics_by_grade(fee_year: str) -> List[ArrearsStatisticsByGrade]:
+def get_arrears_statistics_by_grade(fee_year: Optional[str] = None) -> List[ArrearsStatisticsByGrade]:
     """
     按年级统计指定收费年度的欠费学生人数
 
-    :param fee_year: 收费年度（SF_ZZ.SFQJDM，如 "2025"）
+    :param fee_year: 收费年度（SF_ZZ.SFQJDM，如 "2025"），None 表示统计所有收费年度
     :return: 按年级统计结果
     """
     with Session(student_expense_engine) as session:
@@ -173,11 +178,11 @@ def get_arrears_statistics_by_grade(fee_year: str) -> List[ArrearsStatisticsByGr
         return statistics_list
 
 
-def get_arrears_statistics_by_department(fee_year: str) -> List[ArrearsStatisticsByDepartment]:
+def get_arrears_statistics_by_department(fee_year: Optional[str] = None) -> List[ArrearsStatisticsByDepartment]:
     """
     按学院统计指定收费年度的欠费学生人数
 
-    :param fee_year: 收费年度（SF_ZZ.SFQJDM，如 "2025"）
+    :param fee_year: 收费年度（SF_ZZ.SFQJDM，如 "2025"），None 表示统计所有收费年度
     :return: 按学院统计结果
     """
     with Session(student_expense_engine) as session:

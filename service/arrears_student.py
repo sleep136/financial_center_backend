@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from models.ArrearsStudent import (
     get_arrears_students,
     get_arrears_statistics_by_grade,
@@ -8,12 +9,12 @@ from models.ArrearsStudent import (
 logger = logging.getLogger(__name__)
 
 
-def get_arrears_student_details(grade: str, fee_year: str):
+def get_arrears_student_details(grade: Optional[str] = None, fee_year: Optional[str] = None):
     """
-    获取指定学生年级、收费年度的欠费学生明细
+    获取欠费学生明细
 
-    :param grade: 学生年级（入学年度，如 "2025"）
-    :param fee_year: 收费年度（收费期间代码，如 "2025"）
+    :param grade: 学生年级（入学年度，如 "2025"），None 表示不过滤年级
+    :param fee_year: 收费年度（收费期间代码，如 "2025"），None 表示不过滤收费年度
     :return: 欠费学生明细列表
     """
     try:
@@ -23,11 +24,11 @@ def get_arrears_student_details(grade: str, fee_year: str):
         raise
 
 
-def get_arrears_grade_statistics(fee_year: str):
+def get_arrears_grade_statistics(fee_year: Optional[str] = None):
     """
-    按年级统计指定收费年度的欠费学生人数
+    按年级统计欠费学生人数
 
-    :param fee_year: 收费年度（收费期间代码，如 "2025"）
+    :param fee_year: 收费年度（收费期间代码，如 "2025"），None 表示统计所有收费年度
     :return: 按年级统计结果
     """
     try:
@@ -37,11 +38,11 @@ def get_arrears_grade_statistics(fee_year: str):
         raise
 
 
-def get_arrears_department_statistics(fee_year: str):
+def get_arrears_department_statistics(fee_year: Optional[str] = None):
     """
-    按学院统计指定收费年度的欠费学生人数
+    按学院统计欠费学生人数
 
-    :param fee_year: 收费年度（收费期间代码，如 "2025"）
+    :param fee_year: 收费年度（收费期间代码，如 "2025"），None 表示统计所有收费年度
     :return: 按学院统计结果
     """
     try:
@@ -51,12 +52,13 @@ def get_arrears_department_statistics(fee_year: str):
         raise
 
 
-def get_department_arrears_details(grade: str, fee_year: str, department_code: str):
+def get_department_arrears_details(grade: Optional[str] = None, fee_year: Optional[str] = None,
+                                   department_code: Optional[str] = None):
     """
-    获取指定学院、学生年级、收费年度的欠费学生明细
+    获取指定学院的欠费学生明细
 
-    :param grade: 学生年级（入学年度，如 "2025"）
-    :param fee_year: 收费年度（收费期间代码，如 "2025"）
+    :param grade: 学生年级（入学年度，如 "2025"），None 表示不过滤年级
+    :param fee_year: 收费年度（收费期间代码，如 "2025"），None 表示不过滤收费年度
     :param department_code: 学院代码
     :return: 欠费学生明细列表
     """
