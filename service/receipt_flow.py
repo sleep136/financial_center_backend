@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy import text
-from db import financial_write_engine
+from db import financial_engine
 from models.ReceiptFlow import ReceiptFlowStatus
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ def get_receipt_flow_by_ywlsh(ywlsh: str) -> list[ReceiptFlowStatus]:
     flow_status_list = []
     
     try:
-        with financial_write_engine.connect() as conn:
+        with financial_engine.connect() as conn:
             # 只查询 zw_jdgl_wlb 表
             query = text("""
                 SELECT 
