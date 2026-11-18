@@ -5,18 +5,21 @@ from db import reimbursement_engine
 
 class ApprovalWorkflow(SQLModel, table=True):
     __tablename__ = "TC_SPXXDL"
-    __table_args__ = {'schema': "UAP"}
-    PID: str = Field(primary_key=True)
-    YWLSH: str  # 业务流水号
-    MKDM: str  # 模块代码
-    YWBH: str  # 业务编号
+    __table_args__ = {
+        'schema': "UAP",
+        'extend_existing': True
+    }
+    PID: str
+    YWLSH: str = Field(primary_key=True)  # 业务流水号
+    MKDM: str = Field(primary_key=True)  # 模块代码
+    YWBH: str = Field(primary_key=True)  # 业务编号
     TABLENAME: str
     SQR: str  # 申请人姓名
     SQRBH: str  # 申请人编号
     SQRQ: str  # 申请日期
     SQSJ: str  # 申请时间
     SQNR: str  # 申请内容摘要
-    SPJB: str  # 审批级别
+    SPJB: str = Field(primary_key=True)  # 审批级别
     SPR: str  # 审批人姓名
     SPRQ: str  # 审批日期
     SPSJ: str  # 审批时间
@@ -28,7 +31,7 @@ class ApprovalWorkflow(SQLModel, table=True):
     CF4: str  # 审批通用数据
     QMSJ: str
     TPXX: str
-    SPRBH: str  # 审批人编号
+    SPRBH: str = Field(primary_key=True)  # 审批人编号
     SIGNRESULT: str
     HANDWRITINGJSON: str
     SFQZ: str

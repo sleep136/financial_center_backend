@@ -19,8 +19,8 @@ def get_workflow_by_business_id(business_id: str):
         for approval_workflow in approval_workflows:
             approval_date = approval_workflow.SPRQ if approval_workflow.SPRQ else ""
             approver = approval_workflow.SPR if approval_workflow.SPR else ""
-            list_workflows.append(
-                ApprovalWorkflowDataObject(business_id=approval_workflow.YWLSH,
+            abstract = approval_workflow.SQNR if approval_workflow.SQNR else ""
+            item = ApprovalWorkflowDataObject(business_id=approval_workflow.YWLSH,
                                            business_type=approval_workflow.YWBH,
                                            applicants_id=approval_workflow.SQRBH,
                                            applicants_name=approval_workflow.SQR,
@@ -30,8 +30,9 @@ def get_workflow_by_business_id(business_id: str):
                                            approval_state=approval_workflow.SPZT,
                                            approval_sort=approval_workflow.SPJB,
                                            approval_role=approval_workflow.SPJS,
-                                           abstract=approval_workflow.SQNR
-                                           ))
+                                           abstract=abstract
+                                           )
+            list_workflows.append(item)
     return list_workflows
 
 
@@ -71,8 +72,12 @@ def get_workflow_by_work_id(work_id: str, state: int = -1):
 
     for lsh, approval_workflow in dict_workflows.items():
         print(approval_workflow)
-        abstract_dict = json.loads(approval_workflow['abstract'])
-        abstract = flatten_dict_to_str(abstract_dict)
+        abstract_raw = approval_workflow['abstract']
+        if abstract_raw:
+            abstract_dict = json.loads(abstract_raw)
+            abstract = flatten_dict_to_str(abstract_dict)
+        else:
+            abstract = ""
         approval_date = approval_workflow['approval_date'] if approval_workflow['approval_date'] else ""
         approver = approval_workflow['approver'] if approval_workflow['approver'] else ""
         list_workflows.append(
